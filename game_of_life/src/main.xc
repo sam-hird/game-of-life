@@ -49,7 +49,7 @@ void DataInStream(char infname[], chanend c_out)
     _readinline( line, IMWD );
     for( int x = 0; x < IMWD; x++ ) {
       c_out <: line[ x ];
-      printf( "-%4.1d ", line[ x ] ); //show image values
+      //printf( "-%4.1d ", line[ x ] ); //show image values
     }
     printf( "\n" );
   }
@@ -76,14 +76,36 @@ void distributor(chanend c_in, chanend c_out, chanend fromAcc)
   printf( "Waiting for Board Tilt...\n" );
   fromAcc :> int value;
 
+  uchar pixels[IMHT][IMWD];
+  for( int y = 0; y < IMHT; y++ ) {
+      for( int x = 0; x < IMWD; x++ ) {
+        c_in :> pixels[x][y];
+      }
+    }
   //Read in and do something with your image values..
   //This just inverts every pixel, but you should
   //change the image according to the "Game of Life"
+  uchar current;
+  uchar returnval;
+  int neighbors;
   printf( "Processing...\n" );
   for( int y = 0; y < IMHT; y++ ) {   //go through all lines
-    for( int x = 0; x < IMWD; x++ ) { //go through each pixel per line
-      c_in :> val;                    //read the pixel value
-      c_out <: (uchar)( val ^ 0xFF ); //send some modified pixel out
+    for( int x = 0; x < IMWD; x++ ) {
+        current = pixels[x][y];
+        neighbors = pixels[(x+IMHT+1)%IMHT] [(y+IMHT+1)%IMHT] +
+                        pixels[(x+IMHT+1)%IMHT] [(y+IMHT)%IMHT] +
+                        pixels[(x+IMHT+1)%IMHT] [(y+IMHT-1)%IMHT] +
+                        pixels[(x+IMHT-1)%IMHT] [(y+IMHT+1)%IMHT] +
+                        pixels[(x+IMHT-1)%IMHT] [(y+IMHT)  %IMHT] +
+                        pixels[(x+IMHT-1)%IMHT] [(y+IMHT-1)%IMHT] +
+                        pixels[(x+IMHT  )%IMHT] [(y+IMHT+1)%IMHT] +
+                        pixels[(x+IMHT  )%IMHT] [(y+IMHT-1)%IMHT];
+        if (current == 255){
+            returnval = (neighbors/255==2||neighbors/255==3?255:0);
+        } else {
+            returnval = (neighbors/255==3?255:0);
+        }
+      c_out <: returnval; //send some modified pixel out
     }
   }
   printf( "\nOne processing round completed...\n" );
@@ -111,6 +133,7 @@ void DataOutStream(char outfname[], chanend c_in)
   for( int y = 0; y < IMHT; y++ ) {
     for( int x = 0; x < IMWD; x++ ) {
       c_in :> line[ x ];
+      printf( "-%4.1d ", line[ x ] ); //show image values
     }
     _writeoutline( line, IMWD );
     printf( "DataOutStream: Line written...\n" );
