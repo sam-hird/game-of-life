@@ -11,6 +11,11 @@
 #define  IMWD 16                  //image width
 
 typedef unsigned char uchar;      //using uchar as shorthand
+typedef struct{
+    uchar val;
+    int x;
+    int y;
+} pixel;
 
 port p_scl = XS1_PORT_1E;         //interface ports to orientation
 port p_sda = XS1_PORT_1F;
@@ -60,6 +65,71 @@ void DataInStream(char infname[], chanend c_out)
   return;
 }
 
+void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
+    printf("worker starting \n");
+    uchar pixels[IMWD/2+2][IMHT];
+    for( int y = 0; y < IMHT; y++ ) {
+          for( int x = 1; x <= IMWD/2; x++ ) {
+              cDist :> pixels[x][y];
+              printf("%c, ", pixels[x][y]);
+          }
+          cNeigh <: pixels[y][1];
+          cNeigh <: pixels[y][IMHT/2];
+          cNeigh :> pixels[y][IMHT/2+1];
+          cNeigh :> pixels[y][0];
+    }
+
+
+    pixel current;
+    int neighbors;
+    for( int y = 0; y < IMHT; y++ ) {   //go through all lines
+        for( int x = 0; x < IMWD; x++ ) {
+            current.x = x;
+            current.y = y;
+            current.val = pixels[x][y];
+            neighbors = pixels[(x+IMHT+1)%IMHT] [(y+IMHT+1)%IMHT] +
+                            pixels[(x+IMHT+1)%IMHT] [(y+IMHT)%IMHT] +
+                            pixels[(x+IMHT+1)%IMHT] [(y+IMHT-1)%IMHT] +
+                            pixels[(x+IMHT-1)%IMHT] [(y+IMHT+1)%IMHT] +
+                            pixels[(x+IMHT-1)%IMHT] [(y+IMHT)  %IMHT] +
+                            pixels[(x+IMHT-1)%IMHT] [(y+IMHT-1)%IMHT] +
+                            pixels[(x+IMHT  )%IMHT] [(y+IMHT+1)%IMHT] +
+                            pixels[(x+IMHT  )%IMHT] [(y+IMHT-1)%IMHT];
+            if (current.val == 255){
+                current.val = (neighbors/255==2||neighbors/255==3?255:0);
+            } else {
+                current.val = (neighbors/255==3?255:0);
+            }
+            cColl <: current;
+          //send some modified pixel out
+        }
+      }
+}
+void collector(streaming chanend worker[2], chanend output){
+    int count = 0;
+    uchar outArray[IMWD][IMHT];
+    pixel inPixel;
+    while(count < IMHT*IMWD){
+        select {
+            case worker[0] :> inPixel:
+                printf("recieved pixel: %d \n", inPixel.val);
+                outArray[inPixel.x][inPixel.y] = inPixel.val;
+                count++;
+                break;
+            case worker[1] :> inPixel:
+                printf("recieved pixel: %d \n", inPixel.val);
+                outArray[inPixel.x][inPixel.y] = inPixel.val;
+                count++;
+                break;
+            }
+    }
+    for( int y = 0; y < IMHT; y++ ) {
+        for( int x = 0; x < IMWD; x++ ) {
+          output <: outArray[x][y];
+        }
+      }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Start your implementation by changing this function to implement the game of life
@@ -67,48 +137,27 @@ void DataInStream(char infname[], chanend c_out)
 // Currently the function just inverts the image
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-void distributor(chanend c_in, chanend c_out, chanend fromAcc)
+void distributor(chanend c_in, chanend distChan[2], chanend fromAcc)
 {
-  uchar val;
 
   //Starting up and wait for tilting of the xCore-200 Explorer
   printf( "ProcessImage: Start, size = %dx%d\n", IMHT, IMWD );
   printf( "Waiting for Board Tilt...\n" );
   fromAcc :> int value;
+  printf("got board titlt \n");
 
-  uchar pixels[IMHT][IMWD];
+  uchar current;
   for( int y = 0; y < IMHT; y++ ) {
       for( int x = 0; x < IMWD; x++ ) {
-        c_in :> pixels[x][y];
+          c_in :> current;
+          printf("%d, ", current);
+          if(x<=IMWD/2){
+              distChan[0] <: current;
+          } else {
+              distChan[1] <: current;
+          }
       }
-    }
-  //Read in and do something with your image values..
-  //This just inverts every pixel, but you should
-  //change the image according to the "Game of Life"
-  uchar current;
-  uchar returnval;
-  int neighbors;
-  printf( "Processing...\n" );
-  for( int y = 0; y < IMHT; y++ ) {   //go through all lines
-    for( int x = 0; x < IMWD; x++ ) {
-        current = pixels[x][y];
-        neighbors = pixels[(x+IMHT+1)%IMHT] [(y+IMHT+1)%IMHT] +
-                        pixels[(x+IMHT+1)%IMHT] [(y+IMHT)%IMHT] +
-                        pixels[(x+IMHT+1)%IMHT] [(y+IMHT-1)%IMHT] +
-                        pixels[(x+IMHT-1)%IMHT] [(y+IMHT+1)%IMHT] +
-                        pixels[(x+IMHT-1)%IMHT] [(y+IMHT)  %IMHT] +
-                        pixels[(x+IMHT-1)%IMHT] [(y+IMHT-1)%IMHT] +
-                        pixels[(x+IMHT  )%IMHT] [(y+IMHT+1)%IMHT] +
-                        pixels[(x+IMHT  )%IMHT] [(y+IMHT-1)%IMHT];
-        if (current == 255){
-            returnval = (neighbors/255==2||neighbors/255==3?255:0);
-        } else {
-            returnval = (neighbors/255==3?255:0);
-        }
-      c_out <: returnval; //send some modified pixel out
-    }
   }
-  printf( "\nOne processing round completed...\n" );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -195,19 +244,25 @@ void orientation( client interface i2c_master_if i2c, chanend toDist) {
 /////////////////////////////////////////////////////////////////////////////////////////
 int main(void) {
 
-i2c_master_if i2c[1];               //interface to orientation
+    i2c_master_if i2c[1];               //interface to orientation
 
-char infname[] = "test.pgm";     //put your input image path here
-char outfname[] = "testout.pgm"; //put your output image path here
-chan c_inIO, c_outIO, c_control;    //extend your channel definitions here
+    char infname[] = "test.pgm";     //put your input image path here
+    char outfname[] = "testout.pgm"; //put your output image path here
+    chan c_inIO, c_outIO, c_control;    //extend your channel definitions here
+    streaming chan workerChan;
+    streaming chan collChan[2];
+    chan distChan[2];
 
-par{
-    i2c_master(i2c, 1, p_scl, p_sda, 10);   //server thread providing orientation data
-    orientation(i2c[0],c_control);        //client thread reading orientation data
-    DataInStream(infname, c_inIO);          //thread to read in a PGM image
-    DataOutStream(outfname, c_outIO);       //thread to write out a PGM image
-    distributor(c_inIO, c_outIO, c_control);//thread to coordinate work on image
-  }
+    par{
+        worker(distChan[0], collChan[0], workerChan);
+        worker(distChan[1], collChan[1], workerChan);
+        collector(collChan, c_outIO);
+        i2c_master(i2c, 1, p_scl, p_sda, 10);   //server thread providing orientation data
+        orientation(i2c[0],c_control);        //client thread reading orientation data
+        DataInStream(infname, c_inIO);          //thread to read in a PGM image
+        DataOutStream(outfname, c_outIO);       //thread to write out a PGM image
+        distributor(c_inIO, distChan, c_control);//thread to coordinate work on image
+    }
 
   return 0;
 }
