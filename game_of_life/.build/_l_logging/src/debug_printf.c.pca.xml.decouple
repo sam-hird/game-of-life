@@ -1,4 +1,4 @@
-<preCompilationAnalysis file="C:/Users/samuel/XMOSworkspace/COMS20001/lib_logging/src/debug_printf.c">
+<preCompilationAnalysis file="C:/Users/David/workspace/game-of-life/lib_logging/src/debug_printf.c">
   <fCall global="true" name="debug_printf"/>
   <fCall global="true" name="debug_printf.nstackwords"/>
   <fCall global="true" name="strlen.nstackwords"/>

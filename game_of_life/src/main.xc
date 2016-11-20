@@ -54,7 +54,7 @@ void DataInStream(char infname[], chanend c_out)
     _readinline( line, IMWD );
     for( int x = 0; x < IMWD; x++ ) {
       c_out <: line[ x ];
-      //printf( "-%4.1d ", line[ x ] ); //show image values
+      //printf( "%d ", line[ x ] ); //show image values
     }
     printf( "\n" );
   }
@@ -66,17 +66,16 @@ void DataInStream(char infname[], chanend c_out)
 }
 
 void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
-    printf("worker starting \n");
     uchar pixels[IMWD/2+2][IMHT];
     for( int y = 0; y < IMHT; y++ ) {
-          for( int x = 1; x <= IMWD/2; x++ ) {
+          for( int x = 1; x <=IMWD/2; x++ ) {
               cDist :> pixels[x][y];
-              printf("%c, ", pixels[x][y]);
+              //printf("%c, ", pixels[x][y]);
           }
-          cNeigh <: pixels[y][1];
-          cNeigh <: pixels[y][IMHT/2];
-          cNeigh :> pixels[y][IMHT/2+1];
-          cNeigh :> pixels[y][0];
+          cNeigh <: pixels[0][y];
+          cNeigh <: pixels[IMHT/2][y];
+          cNeigh :> pixels[IMHT/2][y];
+          cNeigh :> pixels[0][y];
     }
 
 
@@ -142,16 +141,16 @@ void distributor(chanend c_in, chanend distChan[2], chanend fromAcc)
 
   //Starting up and wait for tilting of the xCore-200 Explorer
   printf( "ProcessImage: Start, size = %dx%d\n", IMHT, IMWD );
-  printf( "Waiting for Board Tilt...\n" );
-  fromAcc :> int value;
-  printf("got board titlt \n");
 
+  printf( "Waiting for Board Tilt...\n" );
+  int value;
+  fromAcc :> value;
+  printf("got board tilt \n");
   uchar current;
   for( int y = 0; y < IMHT; y++ ) {
       for( int x = 0; x < IMWD; x++ ) {
           c_in :> current;
-          printf("%d, ", current);
-          if(x<=IMWD/2){
+          if(x<IMWD/2){
               distChan[0] <: current;
           } else {
               distChan[1] <: current;
