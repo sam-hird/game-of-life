@@ -74,7 +74,7 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
           }
           cNeigh <: pixels[0][y];
           cNeigh <: pixels[IMHT/2][y];
-          cNeigh :> pixels[IMHT/2][y];
+          cNeigh :> pixels[(IMHT/2)+1][y];
           cNeigh :> pixels[0][y];
     }
 
@@ -82,18 +82,18 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
     pixel current;
     int neighbors;
     for( int y = 0; y < IMHT; y++ ) {   //go through all lines
-        for( int x = 0; x < IMWD; x++ ) {
+        for( int x = 0; x <=IMWD/2; x++ ) {
             current.x = x;
             current.y = y;
             current.val = pixels[x][y];
-            neighbors = pixels[(x+IMHT+1)%IMHT] [(y+IMHT+1)%IMHT] +
-                            pixels[(x+IMHT+1)%IMHT] [(y+IMHT)%IMHT] +
-                            pixels[(x+IMHT+1)%IMHT] [(y+IMHT-1)%IMHT] +
-                            pixels[(x+IMHT-1)%IMHT] [(y+IMHT+1)%IMHT] +
-                            pixels[(x+IMHT-1)%IMHT] [(y+IMHT)  %IMHT] +
-                            pixels[(x+IMHT-1)%IMHT] [(y+IMHT-1)%IMHT] +
-                            pixels[(x+IMHT  )%IMHT] [(y+IMHT+1)%IMHT] +
-                            pixels[(x+IMHT  )%IMHT] [(y+IMHT-1)%IMHT];
+            neighbors = pixels[(x+IMHT+1)%(IMHT/2+1)] [(y+IMHT+1)%IMHT] +
+                            pixels[(x+IMHT+1)%(IMHT/2+1)] [(y+IMHT)%IMHT] +
+                            pixels[(x+IMHT+1)%(IMHT/2+1)] [(y+IMHT-1)%IMHT] +
+                            pixels[(x+IMHT-1)%(IMHT/2+1)] [(y+IMHT+1)%IMHT] +
+                            pixels[(x+IMHT-1)%(IMHT/2+1)] [(y+IMHT)  %IMHT] +
+                            pixels[(x+IMHT-1)%(IMHT/2+1)] [(y+IMHT-1)%IMHT] +
+                            pixels[(x+IMHT  )%(IMHT/2+1)] [(y+IMHT+1)%IMHT] +
+                            pixels[(x+IMHT  )%(IMHT/2+1)] [(y+IMHT-1)%IMHT];
             if (current.val == 255){
                 current.val = (neighbors/255==2||neighbors/255==3?255:0);
             } else {
