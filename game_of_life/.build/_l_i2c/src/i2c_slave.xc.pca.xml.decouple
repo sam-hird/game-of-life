@@ -1,4 +1,4 @@
-<preCompilationAnalysis file="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_slave.xc">
+<preCompilationAnalysis file="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_slave.xc">
 <fDef name="ack_read_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="ack_write_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="delay_microseconds" global="true" noreturn="false" doNotSpecialize="true" numParams="1"/>

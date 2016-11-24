@@ -54,9 +54,9 @@ void DataInStream(char infname[], chanend c_out)
     _readinline( line, IMWD );
     for( int x = 0; x < IMWD; x++ ) {
       c_out <: line[ x ];
-      //printf( "%d ", line[ x ] ); //show image values
+      printf( "%4.1d ", line[ x ] );
     }
-    printf( "\n" );
+    printf("\n");
   }
 
   //Close PGM image file
@@ -77,7 +77,6 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
           cNeigh :> pixels[y][(IMHT/2)+1];
           cNeigh :> pixels[y][0];
     }
-
 
     pixel current;
     int neighbors;
@@ -100,7 +99,6 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
                 current.val = ((neighbors/255==3)?255:0);
             }
             cColl <: current;
-          //send some modified pixel out
         }
       }
 }
@@ -111,13 +109,11 @@ void collector(streaming chanend worker[2], chanend output){
     while(count < IMHT*IMWD){
         select {
             case worker[0] :> inPixel:
-                printf("received pixel: %d \n", inPixel.val);
                 inPixel.x = inPixel.x -1;
                 outArray[inPixel.y][inPixel.x] = inPixel.val;
                 count++;
                 break;
             case worker[1] :> inPixel:
-                printf("received pixel: %d \n", inPixel.val);
                 inPixel.x = inPixel.x + 7;
                 outArray[inPixel.y][inPixel.x] = inPixel.val;
                 count++;
@@ -183,7 +179,7 @@ void DataOutStream(char outfname[], chanend c_in)
   for( int y = 0; y < IMHT; y++ ) {
     for( int x = 0; x < IMWD; x++ ) {
       c_in :> line[ x ];
-      printf( "-%4.1d ", line[ x ] ); //show image values
+      printf( " %4.1d ", line[ x ] ); //show image values
     }
     _writeoutline( line, IMWD );
     printf( "DataOutStream: Line written...\n" );

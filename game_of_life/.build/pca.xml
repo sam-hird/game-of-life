@@ -1,5 +1,5 @@
 <preCompilationAnalysis>
-<fInfo name="high_pulse" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="3">
+<fInfo name="high_pulse" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="3">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -16,7 +16,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="high_pulse_sample" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="4">
+<fInfo name="high_pulse_sample" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="4">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -39,7 +39,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="release_clock_and_wait" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="3">
+<fInfo name="release_clock_and_wait" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="3">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -56,7 +56,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="start_bit" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="3">
+<fInfo name="start_bit" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="3">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -73,7 +73,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="stop_bit" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="4">
+<fInfo name="stop_bit" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="4">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -95,7 +95,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="tx8" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="5">
+<fInfo name="tx8" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="5">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -122,7 +122,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="adjust_fall" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="3">
+<fInfo name="adjust_fall" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="3">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -139,7 +139,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="adjust_for_slip" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="3">
+<fInfo name="adjust_for_slip" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="3">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -157,7 +157,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="high_pulse_drive" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="7">
+<fInfo name="high_pulse_drive" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="7">
   <arg num="0" specialize="false">
     <values>
     </values>
@@ -192,7 +192,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="high_pulse_sample" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="true" noreturn="false" doNotSpecialize="false" numParams="7">
+<fInfo name="high_pulse_sample" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="true" noreturn="false" doNotSpecialize="false" numParams="7">
   <arg num="0" specialize="false">
     <values>
     </values>
@@ -238,7 +238,7 @@
    </specialization>
  </specializations>
 </fInfo>
-<fInfo name="start_bit" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="5">
+<fInfo name="start_bit" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="5">
   <arg num="0" specialize="false">
     <values>
     </values>
@@ -263,7 +263,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="stop_bit" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="6">
+<fInfo name="stop_bit" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="6">
   <arg num="0" specialize="false">
     <values>
     </values>
@@ -293,7 +293,7 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="tx8" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="7">
+<fInfo name="tx8" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="7">
   <arg num="0" specialize="false">
     <values>
     </values>
@@ -328,13 +328,13 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="wait_half" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="1">
+<fInfo name="wait_half" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="1">
   <arg num="0" specialize="false">
     <values>
     </values>
   </arg>
 </fInfo>
-<fInfo name="wait_quarter" global="false" unit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="1">
+<fInfo name="wait_quarter" global="false" unit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="1">
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
@@ -477,7 +477,7 @@
 <fInfo name="i2c_master" global="true" specialize="true" noreturn="false" doNotSpecialize="false" numParams="5">
   <arg num="0" specialize="false">
     <values>
-      <value type="interface"><interfaceInfo index="0" type="dist" func="i2c_master" global="true" impUnit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" impId="0" param="0"/></value>
+      <value type="interface"><interfaceInfo index="0" type="dist" func="i2c_master" global="true" impUnit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" impId="0" param="0"/></value>
       <value type="interface"><interfaceInfo index="0" type="dist" func="_Si2c_master_0" global="true" impUnit="../src/main.xc" impId="3" param="0"/></value>
     </values>
   </arg>
@@ -549,7 +549,7 @@
   </arg>
   <arg num="2" specialize="true">
     <values>
-      <value type="interface"><interfaceInfo index="0" type="dist" func="i2c_master" global="true" impUnit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" impId="0" param="0"/></value>
+      <value type="interface"><interfaceInfo index="0" type="dist" func="i2c_master" global="true" impUnit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" impId="0" param="0"/></value>
     </values>
   </arg>
   <arg num="3" specialize="false">
@@ -560,7 +560,7 @@
    <specialization id="0">
     <arg num="0"><values><value type="interface"/></values></arg>
     <arg num="1"><values><value type="unknown"/></values></arg>
-    <arg num="2"><values><value type="interface"><interfaceInfo index="0" type="dist" func="i2c_master" global="true" impUnit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" impId="0" param="0"/></value></values></arg>
+    <arg num="2"><values><value type="interface"><interfaceInfo index="0" type="dist" func="i2c_master" global="true" impUnit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" impId="0" param="0"/></value></values></arg>
     <arg num="3"><values><value type="unknown"/></values></arg>
    </specialization>
  </specializations>
@@ -969,8 +969,8 @@
 </fCall>
 <fCall name="orientation" global="true" callerUnit="../src/main.xc" numArgs="2" impId="4" specializationId="0">
 </fCall>
-<fCall name="i2c_master" global="true" callerUnit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" numArgs="5" impId="0" specializationId="0">
+<fCall name="i2c_master" global="true" callerUnit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" numArgs="5" impId="0" specializationId="0">
 </fCall>
-<fCall name="i2c_master_async_aux" global="true" callerUnit="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc" numArgs="4" impId="1" specializationId="0">
+<fCall name="i2c_master_async_aux" global="true" callerUnit="C:/Users/samuel/XMOSworkspace/COMS20001/lib_i2c/src/i2c_master_async.xc" numArgs="4" impId="1" specializationId="0">
 </fCall>
 </preCompilationAnalysis>

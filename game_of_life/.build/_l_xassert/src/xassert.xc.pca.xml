@@ -1,3 +1,3 @@
-<preCompilationAnalysis file="C:/Users/David/workspace/game-of-life/lib_xassert/src/xassert.xc">
+<preCompilationAnalysis file="C:/Users/samuel/XMOSworkspace/COMS20001/lib_xassert/src/xassert.xc">
 <fDef name="xassert_msg" global="true" noreturn="false" doNotSpecialize="false" numParams="1"/>
 </preCompilationAnalysis>
