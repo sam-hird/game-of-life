@@ -66,38 +66,38 @@ void DataInStream(char infname[], chanend c_out)
 }
 
 void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
-    uchar pixels[IMWD/2+2][IMHT];
+    uchar pixels[IMHT][IMWD/2+2];
     for( int y = 0; y < IMHT; y++ ) {
           for( int x = 1; x <=IMWD/2; x++ ) {
-              cDist :> pixels[x][y];
+              cDist :> pixels[y][x];
               //printf("%c, ", pixels[x][y]);
           }
-          cNeigh <: pixels[0][y];
-          cNeigh <: pixels[IMHT/2][y];
-          cNeigh :> pixels[(IMHT/2)+1][y];
-          cNeigh :> pixels[0][y];
+          cNeigh <: pixels[y][0];
+          cNeigh <: pixels[y][IMHT/2];
+          cNeigh :> pixels[y][(IMHT/2)+1];
+          cNeigh :> pixels[y][0];
     }
 
 
     pixel current;
     int neighbors;
     for( int y = 0; y < IMHT; y++ ) {   //go through all lines
-        for( int x = 0; x <=IMWD/2; x++ ) {
+        for( int x = 1; x <=IMWD/2; x++ ) {
             current.x = x;
             current.y = y;
-            current.val = pixels[x][y];
-            neighbors = pixels[(x+IMHT+1)%(IMHT/2+1)] [(y+IMHT+1)%IMHT] +
-                            pixels[(x+IMHT+1)%(IMHT/2+1)] [(y+IMHT)%IMHT] +
-                            pixels[(x+IMHT+1)%(IMHT/2+1)] [(y+IMHT-1)%IMHT] +
-                            pixels[(x+IMHT-1)%(IMHT/2+1)] [(y+IMHT+1)%IMHT] +
-                            pixels[(x+IMHT-1)%(IMHT/2+1)] [(y+IMHT)  %IMHT] +
-                            pixels[(x+IMHT-1)%(IMHT/2+1)] [(y+IMHT-1)%IMHT] +
-                            pixels[(x+IMHT  )%(IMHT/2+1)] [(y+IMHT+1)%IMHT] +
-                            pixels[(x+IMHT  )%(IMHT/2+1)] [(y+IMHT-1)%IMHT];
+            current.val = pixels[y][x];
+            neighbors = pixels[(y+IMHT+1)%IMHT][(x+IMHT+1)%(IMHT/2+1)] +
+                            pixels[(y+IMHT)  %IMHT][(x+IMHT+1)%(IMHT/2+1)]+
+                            pixels[(y+IMHT-1)%IMHT][(x+IMHT+1)%(IMHT/2+1)]+
+                            pixels[(y+IMHT+1)%IMHT][(x+IMHT-1)%(IMHT/2+1)]+
+                            pixels[(y+IMHT)  %IMHT][(x+IMHT-1)%(IMHT/2+1)]+
+                            pixels[(y+IMHT-1)%IMHT][(x+IMHT-1)%(IMHT/2+1)]+
+                            pixels[(y+IMHT+1)%IMHT][(x+IMHT  )%(IMHT/2+1)]+
+                            pixels[(y+IMHT-1)%IMHT][(x+IMHT  )%(IMHT/2+1)];
             if (current.val == 255){
-                current.val = (neighbors/255==2||neighbors/255==3?255:0);
+                current.val = ((neighbors/255==2||neighbors/255==3)?255:0);
             } else {
-                current.val = (neighbors/255==3?255:0);
+                current.val = ((neighbors/255==3)?255:0);
             }
             cColl <: current;
           //send some modified pixel out
@@ -106,18 +106,20 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
 }
 void collector(streaming chanend worker[2], chanend output){
     int count = 0;
-    uchar outArray[IMWD][IMHT];
+    uchar outArray[IMHT][IMWD];
     pixel inPixel;
     while(count < IMHT*IMWD){
         select {
             case worker[0] :> inPixel:
-                printf("recieved pixel: %d \n", inPixel.val);
-                outArray[inPixel.x][inPixel.y] = inPixel.val;
+                printf("received pixel: %d \n", inPixel.val);
+                inPixel.x = inPixel.x -1;
+                outArray[inPixel.y][inPixel.x] = inPixel.val;
                 count++;
                 break;
             case worker[1] :> inPixel:
-                printf("recieved pixel: %d \n", inPixel.val);
-                outArray[inPixel.x][inPixel.y] = inPixel.val;
+                printf("received pixel: %d \n", inPixel.val);
+                inPixel.x = inPixel.x + 7;
+                outArray[inPixel.y][inPixel.x] = inPixel.val;
                 count++;
                 break;
             }
@@ -260,7 +262,7 @@ int main(void) {
         orientation(i2c[0],c_control);        //client thread reading orientation data
         DataInStream(infname, c_inIO);          //thread to read in a PGM image
         DataOutStream(outfname, c_outIO);       //thread to write out a PGM image
-        distributor(c_inIO, distChan, c_control);//thread to coordinate work on image
+        distributor(c_inIO, distChan, c_control); //thread to coordinate work on image
     }
 
   return 0;
