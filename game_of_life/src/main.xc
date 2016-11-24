@@ -72,7 +72,7 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
               cDist :> pixels[y][x];
               //printf("%c, ", pixels[x][y]);
           }
-          cNeigh <: pixels[y][0];
+          cNeigh <: pixels[y][1];
           cNeigh <: pixels[y][IMHT/2];
           cNeigh :> pixels[y][(IMHT/2)+1];
           cNeigh :> pixels[y][0];
@@ -85,14 +85,14 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
             current.x = x;
             current.y = y;
             current.val = pixels[y][x];
-            neighbors = pixels[(y+IMHT+1)%IMHT][(x+IMHT+1)%(IMHT/2+1)] +
-                            pixels[(y+IMHT)  %IMHT][(x+IMHT+1)%(IMHT/2+1)]+
-                            pixels[(y+IMHT-1)%IMHT][(x+IMHT+1)%(IMHT/2+1)]+
-                            pixels[(y+IMHT+1)%IMHT][(x+IMHT-1)%(IMHT/2+1)]+
-                            pixels[(y+IMHT)  %IMHT][(x+IMHT-1)%(IMHT/2+1)]+
-                            pixels[(y+IMHT-1)%IMHT][(x+IMHT-1)%(IMHT/2+1)]+
-                            pixels[(y+IMHT+1)%IMHT][(x+IMHT  )%(IMHT/2+1)]+
-                            pixels[(y+IMHT-1)%IMHT][(x+IMHT  )%(IMHT/2+1)];
+            neighbors = pixels[(y+IMHT+1)%IMHT][(x+IMWD/2+2+1)%(IMWD/2+2)] +
+                            pixels[(y+IMHT)  %IMHT][(x+IMWD/2+2+1)%(IMWD/2+2)]+
+                            pixels[(y+IMHT-1)%IMHT][(x+IMWD/2+2+1)%(IMWD/2+2)]+
+                            pixels[(y+IMHT+1)%IMHT][(x+IMWD/2+2-1)%(IMWD/2+2)]+
+                            pixels[(y+IMHT)  %IMHT][(x+IMWD/2+2-1)%(IMWD/2+2)]+
+                            pixels[(y+IMHT-1)%IMHT][(x+IMWD/2+2-1)%(IMWD/2+2)]+
+                            pixels[(y+IMHT+1)%IMHT][(x+IMWD/2+2  )%(IMWD/2+2)]+
+                            pixels[(y+IMHT-1)%IMHT][(x+IMWD/2+2  )%(IMWD/2+2)];
             if (current.val == 255){
                 current.val = ((neighbors/255==2||neighbors/255==3)?255:0);
             } else {
@@ -110,12 +110,12 @@ void collector(streaming chanend worker[2], chanend output){
         select {
             case worker[0] :> inPixel:
                 inPixel.x = inPixel.x -1;
-                outArray[inPixel.y][inPixel.x] = inPixel.val;
+                outArray[inPixel.x][inPixel.y] = inPixel.val;
                 count++;
                 break;
             case worker[1] :> inPixel:
                 inPixel.x = inPixel.x + 7;
-                outArray[inPixel.y][inPixel.x] = inPixel.val;
+                outArray[inPixel.x][inPixel.y] = inPixel.val;
                 count++;
                 break;
             }
@@ -179,7 +179,7 @@ void DataOutStream(char outfname[], chanend c_in)
   for( int y = 0; y < IMHT; y++ ) {
     for( int x = 0; x < IMWD; x++ ) {
       c_in :> line[ x ];
-      printf( " %4.1d ", line[ x ] ); //show image values
+      printf( "%4.1d ", line[ x ] ); //show image values
     }
     _writeoutline( line, IMWD );
     printf( "DataOutStream: Line written...\n" );
