@@ -1,6 +1,6 @@
 <preCompilationAnalysis file="../src/main.xc">
-<fDef name="DataInStream" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
-<fDef name="DataOutStream" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
+<fDef name="DataInStream" global="true" noreturn="false" doNotSpecialize="false" numParams="3"/>
+<fDef name="DataOutStream" global="true" noreturn="false" doNotSpecialize="false" numParams="3"/>
 <fDef name="_safe_memcmp" global="true" noreturn="false" doNotSpecialize="true" numParams="3"/>
 <fDef name="_safe_memmove" global="true" noreturn="false" doNotSpecialize="true" numParams="3"/>
 <fDef name="_safe_memset" global="true" noreturn="false" doNotSpecialize="true" numParams="3"/>
@@ -17,7 +17,7 @@
 <fDef name="master_requires_data" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="master_sent_data" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="1"/>
 <fDef name="operation_complete" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
-<fDef name="orientation" global="true" noreturn="true" doNotSpecialize="false" numParams="2"/>
+<fDef name="orientation" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
 <fDef name="read" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="3"/>
 <fDef name="read" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="false" numParams="4"/>
 <fDef name="read_reg" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="true" numParams="4"/>
@@ -491,25 +491,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="2">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="_closeinpgm" global="true" numArgs="0">
 </fCall>
 <fCall name="printf" global="true" numArgs="1">
@@ -803,25 +784,35 @@
     </values>
   </arg>
 </fCall>
-<fCall name="DataInStream" global="true" numArgs="2" impId="5">
+<fCall name="DataInStream" global="true" numArgs="3" impId="5">
   <arg num="0">
     <values>
       <value type="unknown"/>
     </values>
   </arg>
   <arg num="1">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="2">
     <values>
       <value type="unknown"/>
     </values>
   </arg>
 </fCall>
-<fCall name="DataOutStream" global="true" numArgs="2" impId="6">
+<fCall name="DataOutStream" global="true" numArgs="3" impId="6">
   <arg num="0">
     <values>
       <value type="unknown"/>
     </values>
   </arg>
   <arg num="1">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="2">
     <values>
       <value type="unknown"/>
     </values>

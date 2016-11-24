@@ -36,7 +36,7 @@ port p_sda = XS1_PORT_1F;
 // Read Image from PGM file from path infname[] to channel c_out
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-void DataInStream(char infname[], chanend c_out)
+void DataInStream(char infname[], chanend c_out, chanend toOut)
 {
   int res;
   uchar line[ IMWD ];
@@ -54,13 +54,14 @@ void DataInStream(char infname[], chanend c_out)
     _readinline( line, IMWD );
     for( int x = 0; x < IMWD; x++ ) {
       c_out <: line[ x ];
-      printf( "%4.1d ", line[ x ] );
+      //printf( "%4.1d ", line[ x ] );
     }
-    printf("\n");
+    //printf("\n");
   }
 
   //Close PGM image file
   _closeinpgm();
+  toOut <: 1;
   printf( "DataInStream: Done...\n" );
   return;
 }
@@ -100,8 +101,10 @@ void worker(chanend cDist, streaming chanend cColl, streaming chanend cNeigh){
             }
             cColl <: current;
         }
-      }
+    }
+    return;
 }
+
 void collector(streaming chanend worker[2], chanend output){
     int count = 0;
     uchar outArray[IMHT][IMWD];
@@ -110,21 +113,22 @@ void collector(streaming chanend worker[2], chanend output){
         select {
             case worker[0] :> inPixel:
                 inPixel.x = inPixel.x -1;
-                outArray[inPixel.x][inPixel.y] = inPixel.val;
+                outArray[inPixel.y][inPixel.x] = inPixel.val;
                 count++;
                 break;
             case worker[1] :> inPixel:
                 inPixel.x = inPixel.x + 7;
-                outArray[inPixel.x][inPixel.y] = inPixel.val;
+                outArray[inPixel.y][inPixel.x] = inPixel.val;
                 count++;
                 break;
             }
     }
     for( int y = 0; y < IMHT; y++ ) {
         for( int x = 0; x < IMWD; x++ ) {
-          output <: outArray[x][y];
+          output <: outArray[y][x];
         }
-      }
+    }
+    return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -141,8 +145,8 @@ void distributor(chanend c_in, chanend distChan[2], chanend fromAcc)
   printf( "ProcessImage: Start, size = %dx%d\n", IMHT, IMWD );
 
   printf( "Waiting for Board Tilt...\n" );
-  int value;
-  fromAcc :> value;
+  //int value;
+  //fromAcc :> value;
   printf("got board tilt \n");
   uchar current;
   for( int y = 0; y < IMHT; y++ ) {
@@ -155,6 +159,7 @@ void distributor(chanend c_in, chanend distChan[2], chanend fromAcc)
           }
       }
   }
+  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -162,11 +167,12 @@ void distributor(chanend c_in, chanend distChan[2], chanend fromAcc)
 // Write pixel stream from channel c_in to PGM image file
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-void DataOutStream(char outfname[], chanend c_in)
+void DataOutStream(char outfname[], chanend c_in, chanend fromIn)
 {
   int res;
   uchar line[ IMWD ];
-
+  int done;
+  fromIn :> done;
   //Open PGM file
   printf( "DataOutStream: Start...\n" );
   res = _openoutpgm( outfname, IMWD, IMHT );
@@ -229,6 +235,7 @@ void orientation( client interface i2c_master_if i2c, chanend toDist) {
       if (x>30) {
         tilted = 1 - tilted;
         toDist <: 1;
+        return;
       }
     }
   }
@@ -243,22 +250,24 @@ int main(void) {
 
     i2c_master_if i2c[1];               //interface to orientation
 
-    char infname[] = "test.pgm";     //put your input image path here
+    char infname[] = "testout.pgm";     //put your input image path here
     char outfname[] = "testout.pgm"; //put your output image path here
-    chan c_inIO, c_outIO, c_control;    //extend your channel definitions here
+    chan c_inIO, c_outIO, c_control, inOut;    //extend your channel definitions here
     streaming chan workerChan;
     streaming chan collChan[2];
     chan distChan[2];
 
-    par{
-        worker(distChan[0], collChan[0], workerChan);
-        worker(distChan[1], collChan[1], workerChan);
-        collector(collChan, c_outIO);
-        i2c_master(i2c, 1, p_scl, p_sda, 10);   //server thread providing orientation data
-        orientation(i2c[0],c_control);        //client thread reading orientation data
-        DataInStream(infname, c_inIO);          //thread to read in a PGM image
-        DataOutStream(outfname, c_outIO);       //thread to write out a PGM image
-        distributor(c_inIO, distChan, c_control); //thread to coordinate work on image
+    for (int i =0;i<5;i++){
+        par{
+            worker(distChan[0], collChan[0], workerChan);
+            worker(distChan[1], collChan[1], workerChan);
+            collector(collChan, c_outIO);
+            i2c_master(i2c, 1, p_scl, p_sda, 10);   //server thread providing orientation data
+            orientation(i2c[0],c_control);        //client thread reading orientation data
+            DataInStream(infname, c_inIO, inOut);          //thread to read in a PGM image
+            DataOutStream(outfname, c_outIO, inOut);       //thread to write out a PGM image
+            distributor(c_inIO, distChan, c_control); //thread to coordinate work on image
+        }
     }
 
   return 0;
