@@ -108,7 +108,6 @@ char numAliveNeighbors(char values[3][3], uchar flag) {
 void worker(chanend distChan, streaming chanend collChan){
     uchar workToDo = 1;
     workercoord data;
-    uchar result;
     uchar newChild[3][3];
     ////////send to collector a initial ready-for-work
     data.values[0][0]= 9;
@@ -116,63 +115,78 @@ void worker(chanend distChan, streaming chanend collChan){
     while(workToDo){
         select{
             case distChan :> data: ////////change to non array channel
-                for (int y=0; y<3; y++){
+                printf ("worker recived work from distributor\n");
+                /*for (int y=0; y<3; y++){
                     newChild[y][0] = data.values[y][0];
                     newChild[y][2] = data.values[y][2];
                 }
                 for (int x=0; x<3; x++){
                     newChild[0][x] = data.values[0][x];
                     newChild[2][x] = data.values[2][x];
-                }
+                }*/
                 newChild[1][1] = numAliveNeighbors(data.values, 0);
-                memcpy(data.values, newChild, 9 * sizeof(uchar));
-                collChan <: data;
+                /*for (int y=0; y<3; y++)
+                    for (int x=0; x<3; x++){
+                        data.values[y][x]= newChild[y][x];
+                    }*/data.values[1][1]=newChild[1][1];
+                //memcpy(data.values, newChild, 9 * sizeof(uchar));
+
                 uchar blabla = numAliveNeighbors(data.values, 1);
-                printf ("Position:(%3.1d,%3.1d)  Alive:(%3.1d)  Neighbours:(%3.1d)  Result:(%3.1d)\n", data.Span.y[0], data.Span.x[0], data.values[1][1], blabla, result);
+                printf ("Position:(%3.1d,%3.1d)  Alive:(%3.1d)  Neighbours:(%3.1d)  Result:(%3.1d)\n", data.Span.y[0], data.Span.x[0], data.values[1][1], blabla, newChild[1][1]);
+                collChan <: data;
+                printf ("data sent to collector\n");
                 break;
 
             case collChan :> workToDo:
-                break;
+                return;
 
         }
     }
-    return;
+
 }
 
 void collector(streaming chanend worker[2], chanend output, streaming chanend distChan){
     uchar outArray[IMHT][IMWD];
     workercoord data;
     uchar finished;
-    while(1){
+    finished=1;
+    while(finished){
         select {
             case worker[0] :> data:
+                printf("col recived data from worker 0\n");
                 if (data.values[0][0]==9){
                     distChan <: 0;
                     break;
                 }
-                for (int y = data.Span.y[0]; y <= data.Span.y[1]; y++ )
-                    for (int x = data.Span.x[0]; x <= data.Span.x[1]; x++ )
-                        outArray[y][x] = data.values[1][1];
+                //for (int y = data.Span.y[0]; y <= data.Span.y[1]; y++ )
+                   // for (int x = data.Span.x[0]; x <= data.Span.x[1]; x++ ){
+                        outArray[data.Span.y[0]][data.Span.x[0]] = data.values[1][1];
+                    //}
+
+                        distChan <: 0;
                 break;
             case worker[1] :> data:
+                printf ("col recieved data from worker 1\n");
                 if (data.values[0][0]==9){
                    distChan <: 1;
                    break;
                 }
-                for (int y = data.Span.y[0]; y <= data.Span.y[1]; y++ )
-                    for (int x = data.Span.x[0]; x <= data.Span.x[1]; x++ )
-                        outArray[y][x] = data.values[1][1];
+                //for (int y = data.Span.y[0]; y <= data.Span.y[1]; y++ )
+                    //for (int x = data.Span.x[0]; x <= data.Span.x[1]; x++ )
+                        outArray[data.Span.y[0]][data.Span.x[0]] = data.values[1][1];
+                        distChan <: 1;
                 break;
             case distChan :> finished:
-            for( int y = 0; y < IMHT; y++ ) {
-                for( int x = 0; x < IMWD; x++ ) {
-                  output <: outArray[y][x];
+                worker[0] <: (uchar) 0;
+                worker[1] <: (uchar) 0;
+                for( int y = 0; y < IMHT; y++ ) {
+                    for( int x = 0; x < IMWD; x++ ) {
+                      output <: outArray[y][x];
+                    }
                 }
-            }
                 return;
         }
     }
-
 }
 
 
@@ -223,13 +237,14 @@ void distributor(chanend c_in, chanend workerChan[2], chanend fromAcc,streaming 
 
                   childArray.values[a][b]= pixels[(childArray.Span.y[0]+y+IMHT)%(IMHT)][(childArray.Span.x[0]+x+IMWD)%(IMWD)];
                   b++;
+
               }
               a++;
           }
-
       colDist :> worker;
+      printf ("dist recieved worker %d\n", worker);
       workerChan[worker] <: childArray;
-
+      printf ("data sent to worker %d\n", worker);
          /* case workerChan[1][0] :> workerRequest:
               current.worker = 1;
               colDist[0] <: current;
