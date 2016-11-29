@@ -16,7 +16,7 @@
 <fDef name="main" global="true" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="master_requires_data" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="master_sent_data" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="1"/>
-<fDef name="numAliveNeighbors" global="true" noreturn="false" doNotSpecialize="false" numParams="1"/>
+<fDef name="numAliveNeighbors" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
 <fDef name="operation_complete" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="orientation" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
 <fDef name="read" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="3"/>
@@ -501,10 +501,44 @@
     </values>
   </arg>
 </fCall>
-<fCall name="numAliveNeighbors" global="true" numArgs="1">
+<fCall name="numAliveNeighbors" global="true" numArgs="2">
   <arg num="0">
     <values>
       <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="1">
+    <values>
+      <value type="intval"><intval isSigned="true" val="0"/></value>
+    </values>
+  </arg>
+</fCall>
+<fCall name="__builtin_memcpy_xc" global="true" numArgs="3">
+  <arg num="0">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="1">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="2">
+    <values>
+      <value type="intval"><intval isSigned="false" val="9"/></value>
+    </values>
+  </arg>
+</fCall>
+<fCall name="numAliveNeighbors" global="true" numArgs="2">
+  <arg num="0">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="1">
+    <values>
+      <value type="intval"><intval isSigned="true" val="1"/></value>
     </values>
   </arg>
 </fCall>

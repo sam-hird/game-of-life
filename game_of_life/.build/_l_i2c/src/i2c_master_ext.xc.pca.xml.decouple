@@ -1,4 +1,4 @@
-<preCompilationAnalysis file="/home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_ext.xc">
+<preCompilationAnalysis file="C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_ext.xc">
 <fDef name="ack_read_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="ack_write_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="get_read_data" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="2"/>

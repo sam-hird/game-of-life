@@ -11,25 +11,19 @@
 #define  IMWD 16                  //image width
 
 typedef unsigned char uchar;      //using uchar as shorthand
-typedef struct{
-    uchar val;
-    int x;
-    int y;
-} pixel;
+
+
 
 typedef struct{
-     int x;
-     int y;
+     int x[2]; //[0] is the start element and [1] is the last element
+     int y[2];
  }coord;
 
 typedef struct{
-     uchar worker;
-     coord coords;
+    char values[3][3]; //stores the array to work on with the neighbours, change the size of this later
+    coord Span;   //stores the start of the values array in respect to the mother array
  } workercoord;
 
-typedef struct{
-    char values[3][3];
-} neighbours;
 
 
 port p_scl = XS1_PORT_1E;         //interface ports to orientation
@@ -81,77 +75,81 @@ void DataInStream(char infname[], chanend c_out, chanend toOut)
   return;
 }
 
-char numAliveNeighbors(char values[3][3]) {
+char numAliveNeighbors(char values[3][3], uchar flag) {
     char result = 0;
     for (int y = 0; y < 3; y++){
         for (int x = 0; x < 3; x++){
             if ((!(x==1&&y==1))&&values[y][x]==(uchar)255){
                 result++;
-
             }
         }
     }
-    return result;
+    if (flag ==1)
+        return result;
+
+    if (values[1][1]==255){
+        if (result==2||result==3){
+            return 255;
+        }
+        else {
+            return 0;
+        }
+    }else {
+        if (result==3){
+            return 255;
+        }
+        else {
+            return 0;
+        }
+    }
+
 }
 
-void worker(chanend distChan[2], streaming chanend collChan){
+void worker(chanend distChan, streaming chanend collChan){
     uchar workToDo = 1;
-    neighbours data;
-    coord location;
-    char livingNeighbors;
-    uchar request = 1;
+    workercoord data;
     uchar result;
+    uchar newChild[3][3];
+    ////////send to collector a initial ready-for-work
     while(workToDo){
-        distChan[0] <: request;
         select{
-            case distChan[0] :> data:
-                distChan[0] :> location;
-                livingNeighbors = numAliveNeighbors(data.values);
-                if (data.values[1][1]==255){
-                    if (livingNeighbors==2||livingNeighbors==3){
-                        result = 255;
-                        collChan <: (uchar) result;
-                    }
-                    else {
-                        result = 0;
-                        collChan <: (uchar) result;
-                    }
-                }else {
-                    if (livingNeighbors==3){
-                        result = 255;
-                        collChan <: (uchar) result;
-                    }
-                    else {
-                        result = 0;
-                        collChan <: (uchar) result;
-                    }
-                } printf ("Position:(%3.1d,%3.1d)  Alive:(%3.1d)  Neighbours:(%3.1d)  Result:(%3.1d)\n", location.x, location.y, data.values[2][2], livingNeighbors, result);
+            case distChan :> data: ////////change to non array channel
+                for (int y=0; y<3; y++){
+                    newChild[y][0] = data.values[y][0];
+                    newChild[y][2] = data.values[y][2];
+                }
+                for (int x=0; x<3; x++){
+                    newChild[0][x] = data.values[0][x];
+                    newChild[2][x] = data.values[2][x];
+                }
+                newChild[1][1] = numAliveNeighbors(data.values, 0);
+                memcpy(data.values, newChild, 9 * sizeof(uchar));
+                collChan <: data;
+                uchar blabla = numAliveNeighbors(data.values, 1);
+                printf ("Position:(%3.1d,%3.1d)  Alive:(%3.1d)  Neighbours:(%3.1d)  Result:(%3.1d)\n", data.Span.y[0], data.Span.x[0], data.values[1][1], blabla, result);
                 break;
 
-            case distChan[1] :> workToDo:
+            case collChan :> workToDo:
                 break;
+
         }
     }
     return;
 }
 
-void collector(streaming chanend worker[2], chanend output, chanend distChan[2]){
+void collector(streaming chanend worker[2], chanend output, streaming chanend distChan){
     uchar outArray[IMHT][IMWD];
-    uchar inputValue[2];
-    workercoord workerLocation[3];
+    workercoord data;
     uchar finished;
     while(1){
         select {
-            case worker[0] :> inputValue[0]:
-                outArray[workerLocation[0].coords.y][workerLocation[0].coords.x] = inputValue[0];
+            case worker[0] :> data:
+                outArray[data.Span.y[0]][data.Span.x[0]] = data.values[1][1];
                 break;
-            case worker[1] :> inputValue[1]:
-                outArray[workerLocation[1].coords.y][workerLocation[1].coords.x] = inputValue[1];
+            case worker[1] :> data:
+                outArray[data.Span.y[0]][data.Span.x[0]] = data.values[1][1];
                 break;
-            case distChan[0] :> workerLocation[2]:
-                workerLocation[workerLocation[2].worker] = workerLocation[2];
-                break;
-            case distChan[1] :> finished:
+            case distChan :> finished:
             for( int y = 0; y < IMHT; y++ ) {
                 for( int x = 0; x < IMWD; x++ ) {
                   output <: outArray[y][x];
@@ -163,6 +161,7 @@ void collector(streaming chanend worker[2], chanend output, chanend distChan[2])
 
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Start your implementation by changing this function to implement the game of life
@@ -170,7 +169,7 @@ void collector(streaming chanend worker[2], chanend output, chanend distChan[2])
 // Currently the function just inverts the image
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-void distributor(chanend c_in, chanend workerChan[2][2], chanend fromAcc, chanend colDist[2]){
+void distributor(chanend c_in, chanend workerChan[2], chanend fromAcc,streaming chanend colDist){
 
   //Starting up and wait for tilting of the xCore-200 Explorer
   printf( "ProcessImage: Start, size = %dx%d\n", IMHT, IMWD );
@@ -181,19 +180,25 @@ void distributor(chanend c_in, chanend workerChan[2][2], chanend fromAcc, chanen
   printf("got board tilt \n");
 
   int piecesleft = 1;
-  uchar workerRequest;
-  neighbours currentNeighbours;
-  workercoord current;
+  uchar worker;
+  workercoord childArray;  //worker & their cooredinates
 
-  char pixels[IMHT][IMWD];
 
-  current.coords.x=0;
-  current.coords.y=0;
+  char pixels[IMHT][IMWD]; //This is the mother array
+
+//Gets mother array from datain
   for( int y = 0; y < IMHT; y++ ) {
         for( int x = 0; x < IMWD; x++ ) {
             c_in :> pixels[y][x];
         }
-    }
+  }
+
+
+  childArray.Span.x[0]=0;
+  childArray.Span.x[1]=0;
+  childArray.Span.y[0]=0;
+  childArray.Span.y[1]=0;
+
 
   while (piecesleft != 0){
       char a = 0;
@@ -202,40 +207,42 @@ void distributor(chanend c_in, chanend workerChan[2][2], chanend fromAcc, chanen
           b=0;
               for( int x = -1; x <= 1; x++ ) {
 
-                  currentNeighbours.values[a][b]= pixels[(current.coords.y+y+IMHT)%(IMHT)][(current.coords.x+x+IMWD)%(IMWD)];
+                  childArray.values[a][b]= pixels[(childArray.Span.y[0]+y+IMHT)%(IMHT)][(childArray.Span.x[0]+x+IMWD)%(IMWD)];
                   b++;
               }
               a++;
           }
-      select {
-          case workerChan[0][0] :> workerRequest:
-              current.worker = 0;
-              colDist[0] <: current;
-              workerChan[0][0] <: currentNeighbours;
-              workerChan[0][0] <: current.coords;
-              break;
 
-          case workerChan[1][0] :> workerRequest:
+      colDist :> worker;
+      workerChan[worker-1] <: childArray;
+
+         /* case workerChan[1][0] :> workerRequest:
               current.worker = 1;
               colDist[0] <: current;
               workerChan[1][0] <: currentNeighbours;
               workerChan[1][0] <: current.coords;
               break;
-      }
 
-      current.coords.x++;
-      if (current.coords.x >= IMWD){
-          current.coords.x = 0;
-          current.coords.y ++;
-              if (current.coords.y >= IMHT)
+*/
+
+      childArray.Span.x[0]++;
+      childArray.Span.x[1]++;
+      if (childArray.Span.x[0] >= IMWD){
+          childArray.Span.x[0] = 0;
+          childArray.Span.x[1] = 0;
+          childArray.Span.y[0]++;
+          childArray.Span.y[1]++;
+              if (childArray.Span.y[0] >= IMHT)
                   piecesleft = 0;
       }
   }
+
+  /*
   workerChan[0][0] :> workerRequest;
   workerChan[0][1] <: (uchar) 0;
   workerChan[1][0] :> workerRequest;
-  workerChan[1][1] <: (uchar) 0;
-  colDist[1] <: (uchar) 0;
+  workerChan[1][1] <: (uchar) 0;*/
+  colDist <: (uchar) 0;
   return;
 }
 
@@ -331,11 +338,13 @@ int main(void) {
     char outfname[] = "testout.pgm"; //put your output image path here
     chan c_inIO, c_outIO, c_control, inOut;    //extend your channel definitions here
     streaming chan collChan[2];
-    chan distChan[2][2];
-    chan colDist[2];
+    streaming chan colDist;
+    chan distChan[2];
+
 
     for (int i =0;i<1;i++){
         par{
+
             worker(distChan[0], collChan[0]);
             worker(distChan[1], collChan[1]);
             collector(collChan, c_outIO, colDist);

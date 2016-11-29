@@ -1,4 +1,4 @@
-.build/_l_i2c/src/i2c_master_async.xc.o: ./src/main.xc
-.build/_l_xassert/src/xassert.xc.o: /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc
-.build/_l_i2c/src/i2c_master.xc.o: /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc ./src/main.xc
-.build/_l_i2c/src/i2c_slave.xc.o: /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc ./src/main.xc /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_ext.xc /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc /home/fe15/dz15376/linux/Desktop/workspace/game-of-life/lib_i2c/src/i2c_master.xc
+.build/@@@@C@@@@/Users/David/workspace/game-of-life/_l_i2c/src/i2c_master.xc.o: ./src/main.xc C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc
+.build/@@@@C@@@@/Users/David/workspace/game-of-life/_l_i2c/src/i2c_master_async.xc.o: ./src/main.xc
+.build/@@@@C@@@@/Users/David/workspace/game-of-life/_l_i2c/src/i2c_slave.xc.o: ./src/main.xc C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master.xc C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_ext.xc C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc
+.build/@@@@C@@@@/Users/David/workspace/game-of-life/_l_xassert/src/xassert.xc.o: C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_async.xc C:/Users/David/workspace/game-of-life/lib_i2c/src/i2c_master_single_port.xc
