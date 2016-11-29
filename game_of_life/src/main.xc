@@ -111,6 +111,8 @@ void worker(chanend distChan, streaming chanend collChan){
     uchar result;
     uchar newChild[3][3];
     ////////send to collector a initial ready-for-work
+    data.values[0][0]= 9;
+    collChan <: data;
     while(workToDo){
         select{
             case distChan :> data: ////////change to non array channel
@@ -144,10 +146,22 @@ void collector(streaming chanend worker[2], chanend output, streaming chanend di
     while(1){
         select {
             case worker[0] :> data:
-                outArray[data.Span.y[0]][data.Span.x[0]] = data.values[1][1];
+                if (data.values[0][0]==9){
+                    distChan <: 0;
+                    break;
+                }
+                for (int y = data.Span.y[0]; y <= data.Span.y[1]; y++ )
+                    for (int x = data.Span.x[0]; x <= data.Span.x[1]; x++ )
+                        outArray[y][x] = data.values[1][1];
                 break;
             case worker[1] :> data:
-                outArray[data.Span.y[0]][data.Span.x[0]] = data.values[1][1];
+                if (data.values[0][0]==9){
+                   distChan <: 1;
+                   break;
+                }
+                for (int y = data.Span.y[0]; y <= data.Span.y[1]; y++ )
+                    for (int x = data.Span.x[0]; x <= data.Span.x[1]; x++ )
+                        outArray[y][x] = data.values[1][1];
                 break;
             case distChan :> finished:
             for( int y = 0; y < IMHT; y++ ) {
@@ -214,7 +228,7 @@ void distributor(chanend c_in, chanend workerChan[2], chanend fromAcc,streaming 
           }
 
       colDist :> worker;
-      workerChan[worker-1] <: childArray;
+      workerChan[worker] <: childArray;
 
          /* case workerChan[1][0] :> workerRequest:
               current.worker = 1;
