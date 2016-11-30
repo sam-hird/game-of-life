@@ -877,9 +877,15 @@
 </fInfo>
 <fInfo name="stop_bit" global="true" interface="i2c_slave_callback_if" specialize="false" noreturn="false" doNotSpecialize="false" numParams="0">
 </fInfo>
+<fInfo name="turnOffAll" global="true" interface="ledInterface" specialize="false" noreturn="false" doNotSpecialize="false" numParams="0">
+</fInfo>
 <fInfo name="update" global="true" interface="ledInterface" specialize="false" noreturn="false" doNotSpecialize="false" numParams="1">
   <arg num="0" specialize="false">
     <values>
+      <value type="intval"><intval isSigned="true" val="1"/></value>
+      <value type="intval"><intval isSigned="true" val="2"/></value>
+      <value type="intval"><intval isSigned="true" val="4"/></value>
+      <value type="intval"><intval isSigned="true" val="8"/></value>
     </values>
   </arg>
 </fInfo>

@@ -9,7 +9,8 @@
 typedef unsigned char uchar;
 
 interface ledInterface{
-    void update(int ledCode);
+    void update(char ledCode);
+    void turnOffAll();
     void shutdown();
 };
 interface buttonInterface{
@@ -40,6 +41,12 @@ char outFileName[] = "testout.pgm";
 #define IMWD 16
 #define IMHT 16
 
+#define LED_GREEN 0x04
+#define LED_BLUE 0x02
+#define LED_RED 0x08
+#define LED_GREEN_SEPERATE 0x01
+
+
 on tile[0] : port p_scl = XS1_PORT_1E;
 on tile[0] : port p_sda = XS1_PORT_1F;
 
@@ -56,16 +63,15 @@ on tile[0] : port p_sda = XS1_PORT_1F;
 
 
 void ledProcess(out port ledPort, server interface ledInterface ledIF){
-    int pattern = 0;
-    //1st bit...separate green LED
-    //2nd bit...blue LED
-    //3rd bit...green LED
-    //4th bit...red LED
+    char pattern = 0;
     while (1){
         select{
-            case ledIF.update(int ledCode):
+            case ledIF.update(char ledCode):
                 pattern = pattern ^ ledCode;
                 ledPort <: pattern;
+                break;
+            case ledIF.turnOffAll():
+                ledPort <: 0x0;
                 break;
             case ledIF.shutdown():
                 ledPort <: 0;
@@ -82,7 +88,6 @@ void buttonProcess(in port buttonPort, client interface buttonInterface buttonIF
         buttonIF.getButton(r);
       }
 }
-
 void orientationProcess(client interface orientationInterface orientationIF, client interface i2c_master_if i2c){
       i2c_regop_res_t result;
       char status_data = 0;
@@ -109,7 +114,7 @@ void orientationProcess(client interface orientationInterface orientationIF, cli
         } while (!status_data & 0x08);
 
         //get new x-axis tilt value
-        int x = 0; //read_acceleration(i2c, FXOS8700EQ_OUT_X_MSB);
+        int x = 0;// read_acceleration(i2c, FXOS8700EQ_OUT_X_MSB);
 
         //send signal to distributor after first tilt
         tilted = (x>30?1:0);
@@ -131,7 +136,7 @@ void inputServer(server interface buttonInterface buttonIF, server interface ori
                 button = lastButton;
                 break;
             case inputIF.getLastOrientation(int &orientation):
-                orientation = 0; //lastOrientation;
+                orientation = lastOrientation;
                 break;
             case inputIF.shutdown():
                 return;
@@ -190,6 +195,7 @@ void worker(streaming chanend chanDist, streaming chanend neighborHorz, streamin
     int continueProcessing;
     int CHHT = IMHT/2, CHWD = IMWD/2;
     uchar chunk[IMHT/2+2][IMWD/2+2];
+
     while (1){
         //check if the distributor wants to stop
         chanDist :> continueProcessing;
@@ -253,6 +259,7 @@ void worker(streaming chanend chanDist, streaming chanend neighborHorz, streamin
         }
     }
 }
+
 void distributor(streaming chanend distRead, streaming chanend distWrite,
                  client interface ledInterface ledIF, client interface inputInterface inputIF,
                  streaming chanend chanWorker[4]){
@@ -267,18 +274,22 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     int roundCount = 0; //incremented every time a round of processing happens
     int debug = 0; //enables printing the board every round
 
-
     uchar currentBoard[IMHT][IMWD];
     do{
         roundCount++;
         printf("processing round starting\n");
-        //wait for orientation to be correct before continuing
-        do{
-            inputIF.getLastOrientation(lastOrientation);
-        } while(lastOrientation!=0);
+
+        //wait for orientation to be correct before continuing and change LED to show paused
+        inputIF.getLastOrientation(lastOrientation);
+        if (lastOrientation!=0){
+            ledIF.update(LED_RED);
+            while(lastOrientation!=0){ inputIF.getLastOrientation(lastOrientation); }
+            ledIF.update(LED_RED);
+        }
 
         //read board from file on the first round
         if (roundCount==1){
+            ledIF.update(LED_GREEN);//reader LED on
             distRead <: (int) 1;// start the reader process
             for(int y = 0; y < IMHT; y++){
                 for(int x = 0; x < IMWD; x++){
@@ -288,6 +299,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                 printf("\n");
             }
             printf("finished reading!\n");
+            ledIF.update(LED_GREEN); // reader LED off
         } else if (debug == 1){
             for(int y = 0; y < IMHT; y++){
                 for(int x = 0; x < IMWD; x++){
@@ -296,6 +308,9 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                 printf("\n");
             }
         }
+
+        //update led to show processing
+        ledIF.update(LED_GREEN_SEPERATE);
 
         //alert workers that we are continuing
         for(int i = 0; i<4; i++){ chanWorker[i] <: (int) 1; }
@@ -316,7 +331,6 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                 }
             }
         }
-
 
         int count[4] = {0,0,0,0}; //used to see how many pieces of data have been sent from each worker
         int inX, inY; //used for calculating each workers current xy pointer
@@ -347,10 +361,11 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
             }
         }
         inputIF.getLastButton(lastButton);
-
     } while (lastButton != 1);
     printf("SW2 pressed, saving to file!\n");
     printf("rounds completed: %d\n", roundCount);
+    ledIF.turnOffAll();
+    ledIF.update(LED_BLUE);
     //TODO: timing
 
     //let the workers know to shutdown
@@ -363,6 +378,8 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
             distWrite <: currentBoard[y][x];
         }
     }
+    ledIF.turnOffAll();
+    ledIF.shutdown();
     //TODO: timing
     return;
 
@@ -381,16 +398,16 @@ int main (void){
         on tile[0] : ledProcess(leds, ledIF);
         on tile[0] : buttonProcess(buttons, buttonIF);
         on tile[0] : orientationProcess(orientationIF,i2c[0]);
-        on tile[1] : inputServer(buttonIF, orientationIF, inputIF);
+        on tile[0] : inputServer(buttonIF, orientationIF, inputIF);
         on tile[0] : i2c_master(i2c, 1, p_scl, p_sda, 10);
-
-        on tile[1] : readFile(distRead);
-        on tile[1] : writeToFile(distWrite);
+        on tile[0] : readFile(distRead);
+        on tile[0] : writeToFile(distWrite);
         on tile[0] : distributor(distRead, distWrite, ledIF, inputIF, distWorkers);
-        on tile[0] : worker(distWorkers[0],chanWorkers[0],chanWorkers[3],chanWorkers[4]);
-        on tile[0] : worker(distWorkers[1],chanWorkers[0],chanWorkers[1],chanWorkers[5]);
-        on tile[0] : worker(distWorkers[2],chanWorkers[2],chanWorkers[3],chanWorkers[5]);
-        on tile[0] : worker(distWorkers[3],chanWorkers[2],chanWorkers[1],chanWorkers[4]);
+
+        on tile[1] : worker(distWorkers[0],chanWorkers[0],chanWorkers[3],chanWorkers[4]);
+        on tile[1] : worker(distWorkers[1],chanWorkers[0],chanWorkers[1],chanWorkers[5]);
+        on tile[1] : worker(distWorkers[2],chanWorkers[2],chanWorkers[3],chanWorkers[5]);
+        on tile[1] : worker(distWorkers[3],chanWorkers[2],chanWorkers[1],chanWorkers[4]);
 
     }
     return 0;

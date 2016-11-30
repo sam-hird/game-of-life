@@ -41,6 +41,7 @@
 <fDef name="start_read_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="start_write_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="stop_bit" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
+<fDef name="turnOffAll" global="true" interface="ledInterface" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="update" global="true" interface="ledInterface" noreturn="false" doNotSpecialize="false" numParams="1"/>
 <fDef name="worker" global="true" noreturn="false" doNotSpecialize="false" numParams="4"/>
 <fDef name="write" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="4"/>
@@ -724,6 +725,34 @@
     </values>
   </arg>
 </fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="8"/></value>
+    </values>
+  </arg>
+</fCall>
+<fCall name="getLastOrientation" global="true" interface="inputInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+</fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="8"/></value>
+    </values>
+  </arg>
+</fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="4"/></value>
+    </values>
+  </arg>
+</fCall>
 <fCall name="printf" global="true" numArgs="2">
   <arg num="0">
     <values>
@@ -750,6 +779,13 @@
     </values>
   </arg>
 </fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="4"/></value>
+    </values>
+  </arg>
+</fCall>
 <fCall name="printf" global="true" numArgs="2">
   <arg num="0">
     <values>
@@ -766,6 +802,13 @@
   <arg num="0">
     <values>
       <value type="unknown"/>
+    </values>
+  </arg>
+</fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="1"/></value>
     </values>
   </arg>
 </fCall>
@@ -794,6 +837,19 @@
       <value type="unknown"/>
     </values>
   </arg>
+</fCall>
+<fCall name="turnOffAll" global="true" interface="ledInterface" numArgs="0">
+</fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="2"/></value>
+    </values>
+  </arg>
+</fCall>
+<fCall name="turnOffAll" global="true" interface="ledInterface" numArgs="0">
+</fCall>
+<fCall name="shutdown" global="true" interface="ledInterface" numArgs="0">
 </fCall>
 <fCall name="ledProcess" global="true" numArgs="2" impId="0">
   <arg num="0">
