@@ -274,6 +274,12 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     int roundCount = 0; //incremented every time a round of processing happens
     int debug = 0; //enables printing the board every round
 
+
+    timer t;
+    unsigned long timeStart, timeStop;
+    long double totalTime;
+    unsigned long long timeConst = 4294967296;
+    totalTime = 0;
     uchar currentBoard[IMHT][IMWD];
     do{
         roundCount++;
@@ -308,6 +314,13 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                 printf("\n");
             }
         }
+
+
+        //////////////////////starts timer
+        t :> timeStart;
+        printf ("Timer at start: %lu\n", timeStart);
+        //////////////////////////////////////////////
+
 
         //update led to show processing
         ledIF.update(LED_GREEN_SEPERATE);
@@ -360,13 +373,21 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                     break;
             }
         }
+        t :> timeStop;
+        if (timeStop < timeStart)
+            totalTime = totalTime + ( timeConst - timeStart) + timeStop;
+        else
+            totalTime = totalTime + (timeStop - timeStart);
         inputIF.getLastButton(lastButton);
+
     } while (lastButton != 1);
     printf("SW2 pressed, saving to file!\n");
     printf("rounds completed: %d\n", roundCount);
     ledIF.turnOffAll();
     ledIF.update(LED_BLUE);
+
     //TODO: timing
+    printf ("Total time: %Lf\n", totalTime/(unsigned long) 100000000);
 
     //let the workers know to shutdown
     for(int i = 0; i<4; i++){chanWorker[i] <: (int) 0;}
