@@ -147,7 +147,7 @@ void inputServer(server interface buttonInterface buttonIF, server interface ori
 void readFile(streaming chanend chanDist){
     int val;
     chanDist :> val;
-    printf( "Reading File Started!\n" );
+    //printf( "Reading File Started!\n" );
 
     uchar line[ IMWD ];
     val = _openinpgm( inFileName, IMWD, IMHT );
@@ -169,7 +169,7 @@ void readFile(streaming chanend chanDist){
 void writeToFile(streaming chanend chanDist){
     int val;
     chanDist :> val;
-    printf( "Writing File Started!\n" );
+    //printf( "Writing File Started!\n" );
 
     uchar line[ IMWD ];
     val = _openoutpgm( outFileName, IMWD, IMHT );
@@ -181,13 +181,13 @@ void writeToFile(streaming chanend chanDist){
     for( int y = 0; y < IMHT; y++ ) {
         for( int x = 0; x < IMWD; x++ ) {
             chanDist :> line[ x ];
-            printf( "%4.1d ", line[ x ] );
+            //printf( "%4.1d ", line[ x ] );
         }
         _writeoutline(line, IMWD);
-        printf( "   Line written\n" );
+        //printf( "   Line written\n" );
     }
     _closeoutpgm();
-    printf( "Writing File Finished!\n" );
+    //printf( "Writing File Finished!\n" );
     return;
 }
 
@@ -275,15 +275,13 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     int debug = 0; //enables printing the board every round
 
 
-    timer t;
-    unsigned long timeStart, timeStop;
-    long double totalTime;
-    unsigned long long timeConst = 4294967296;
-    totalTime = 0;
+    timer readTimer, processTimer, writeTimer, totalTimer;
+    uint32_t timeStart, timeStop, timeRead, timeProcess, timeWrite,timeTotalStart, timeTotalStop, timeTotal;
+    totalTimer :> timeTotalStart;
     uchar currentBoard[IMHT][IMWD];
     do{
         roundCount++;
-        printf("processing round starting\n");
+        //printf("processing round starting\n");
 
         //wait for orientation to be correct before continuing and change LED to show paused
         inputIF.getLastOrientation(lastOrientation);
@@ -296,17 +294,22 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
         //read board from file on the first round
         if (roundCount==1){
             ledIF.update(LED_GREEN);//reader LED on
+            readTimer :> timeStart;//start the readTimer
             distRead <: (int) 1;// start the reader process
             for(int y = 0; y < IMHT; y++){
                 for(int x = 0; x < IMWD; x++){
                         distRead :> currentBoard[y][x];
-                        printf("%4.1d ",currentBoard[y][x]);
                 }
-                printf("\n");
             }
-            printf("finished reading!\n");
+
+            //stop timer and save difference in timeRead
+            readTimer :> timeStop;
+            timeRead = timeStop - timeStart;
+
+            //printf("finished reading!\n");
             ledIF.update(LED_GREEN); // reader LED off
-        } else if (debug == 1){
+        }
+        if (debug == 1){
             for(int y = 0; y < IMHT; y++){
                 for(int x = 0; x < IMWD; x++){
                     printf("%4.1d ",currentBoard[y][x]);
@@ -315,15 +318,11 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
             }
         }
 
-
-        //////////////////////starts timer
-        t :> timeStart;
-        printf ("Timer at start: %lu\n", timeStart);
-        //////////////////////////////////////////////
-
-
         //update led to show processing
         ledIF.update(LED_GREEN_SEPERATE);
+
+        //starts process timer
+        processTimer :> timeStart;
 
         //alert workers that we are continuing
         for(int i = 0; i<4; i++){ chanWorker[i] <: (int) 1; }
@@ -348,6 +347,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
         int count[4] = {0,0,0,0}; //used to see how many pieces of data have been sent from each worker
         int inX, inY; //used for calculating each workers current xy pointer
         uchar inputValue; //holds the incoming data
+
         //retrieve data from workers and store it in currentBoard
         while (count[0]+count[1]+count[2]+count[3] < IMHT*IMWD){
             select{
@@ -373,21 +373,19 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                     break;
             }
         }
-        t :> timeStop;
-        if (timeStop < timeStart)
-            totalTime = totalTime + ( timeConst - timeStart) + timeStop;
-        else
-            totalTime = totalTime + (timeStop - timeStart);
+
+        processTimer :> timeStop;
+        timeProcess = timeStop - timeStart;
         inputIF.getLastButton(lastButton);
 
-    } while (lastButton != 1);
-    printf("SW2 pressed, saving to file!\n");
-    printf("rounds completed: %d\n", roundCount);
+    } while (roundCount < 1000 && lastButton != 1);
+    //printf("SW2 pressed, saving to file!\n");
+    //printf("rounds completed: %d\n", roundCount);
     ledIF.turnOffAll();
     ledIF.update(LED_BLUE);
 
-    //TODO: timing
-    printf ("Total time: %Lf\n", totalTime/(unsigned long) 100000000);
+    //start write timer
+    writeTimer :> timeStart;
 
     //let the workers know to shutdown
     for(int i = 0; i<4; i++){chanWorker[i] <: (int) 0;}
@@ -399,9 +397,23 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
             distWrite <: currentBoard[y][x];
         }
     }
+
+    //stop timer and store
+    writeTimer :> timeStop;
+    timeWrite = timeStop - timeStart;
+
     ledIF.turnOffAll();
     ledIF.shutdown();
-    //TODO: timing
+
+    totalTimer :> timeTotalStop;
+    timeTotal = timeTotalStop - timeTotalStart;
+
+    printf("======Timings======\n"
+           "      Read: %11d ticks\n"
+           "   1 round: %11d ticks\n"
+           "     Write: %11d ticks\n"
+           "     Total: %11d ticks\n",
+           timeRead,timeProcess,timeWrite, timeTotal);
     return;
 
 }

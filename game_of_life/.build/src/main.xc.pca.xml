@@ -571,13 +571,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="_openinpgm" global="true" numArgs="3">
   <arg num="0">
     <values>
@@ -621,13 +614,6 @@
 </fCall>
 <fCall name="_closeinpgm" global="true" numArgs="0">
 </fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="_openoutpgm" global="true" numArgs="3">
   <arg num="0">
     <values>
@@ -657,18 +643,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="2">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="_writeoutline" global="true" numArgs="2">
   <arg num="0">
     <values>
@@ -681,13 +655,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="_closeoutpgm" global="true" numArgs="0">
 </fCall>
 <fCall name="printf" global="true" numArgs="1">
@@ -697,21 +664,7 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="getLastButton" global="true" interface="inputInterface" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="printf" global="true" numArgs="1">
   <arg num="0">
     <values>
       <value type="unknown"/>
@@ -750,32 +703,6 @@
   <arg num="0">
     <values>
       <value type="intval"><intval isSigned="true" val="4"/></value>
-    </values>
-  </arg>
-</fCall>
-<fCall name="printf" global="true" numArgs="2">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
     </values>
   </arg>
 </fCall>
@@ -819,25 +746,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="printf" global="true" numArgs="2">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="turnOffAll" global="true" interface="ledInterface" numArgs="0">
 </fCall>
 <fCall name="update" global="true" interface="ledInterface" numArgs="1">
@@ -850,6 +758,33 @@
 <fCall name="turnOffAll" global="true" interface="ledInterface" numArgs="0">
 </fCall>
 <fCall name="shutdown" global="true" interface="ledInterface" numArgs="0">
+</fCall>
+<fCall name="printf" global="true" numArgs="5">
+  <arg num="0">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="1">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="2">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="3">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="4">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
 </fCall>
 <fCall name="ledProcess" global="true" numArgs="2" impId="0">
   <arg num="0">
