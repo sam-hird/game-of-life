@@ -18,6 +18,7 @@
 <fDef name="operation_complete" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="read" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="3"/>
 <fDef name="read" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="false" numParams="4"/>
+<fDef name="read_acceleration" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
 <fDef name="read_reg" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="true" numParams="4"/>
 <fDef name="read_reg16" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="true" numParams="4"/>
 <fDef name="read_reg16_addr8" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="true" numParams="4"/>
@@ -395,6 +396,50 @@
     </values>
   </arg>
 </fCall>
+<fCall name="read_reg" global="true" numArgs="4">
+  <arg num="0">
+    <passThroughArg param="0" caller="read_acceleration" global="true"/>
+    <values>
+    </values>
+  </arg>
+  <arg num="1">
+    <values>
+      <value type="intval"><intval isSigned="true" val="30"/></value>
+    </values>
+  </arg>
+  <arg num="2">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="3">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+</fCall>
+<fCall name="read_reg" global="true" numArgs="4">
+  <arg num="0">
+    <passThroughArg param="0" caller="read_acceleration" global="true"/>
+    <values>
+    </values>
+  </arg>
+  <arg num="1">
+    <values>
+      <value type="intval"><intval isSigned="true" val="30"/></value>
+    </values>
+  </arg>
+  <arg num="2">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+  <arg num="3">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+</fCall>
 <fCall name="__builtin_timer_after" global="true" numArgs="2">
   <arg num="0">
     <values>
@@ -522,8 +567,8 @@
 </fCall>
 <fCall name="__builtin_bitrev" global="true" numArgs="1">
   <arg num="0">
+    <passThroughArg param="2" caller="tx8" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master.xc"/>
     <values>
-      <value type="unknown"/>
     </values>
   </arg>
 </fCall>
@@ -783,18 +828,6 @@
     </values>
   </arg>
   <arg num="3">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="__builtin_timer_after" global="true" numArgs="2">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
     <values>
       <value type="unknown"/>
     </values>

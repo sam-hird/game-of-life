@@ -16,7 +16,6 @@
   <fCall global="true" name="memset.nstackwords"/>
   <fCall global="true" name="_write"/>
   <fCall global="true" name="strlen"/>
-  <fCall global="true" name="__ctype_ptr__"/>
   <fCall global="true" name="memcpy"/>
   <fCall global="true" name="memset"/>
 </preCompilationAnalysis>

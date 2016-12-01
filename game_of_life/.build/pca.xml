@@ -192,14 +192,14 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="high_pulse_sample" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="6">
+<fInfo name="high_pulse_sample" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master_single_port.xc" specialize="true" noreturn="false" doNotSpecialize="false" numParams="7">
   <arg num="0" specialize="false">
     <values>
     </values>
   </arg>
-  <arg num="1" specialize="false">
+  <arg num="1" specialize="true">
     <values>
-      <value type="unknown"/>
+      <value type="intval"><intval isSigned="true" val="0"/></value>
     </values>
   </arg>
   <arg num="2" specialize="false">
@@ -214,13 +214,29 @@
   </arg>
   <arg num="4" specialize="false">
     <values>
+      <value type="unknown"/>
     </values>
   </arg>
   <arg num="5" specialize="false">
     <values>
+    </values>
+  </arg>
+  <arg num="6" specialize="false">
+    <values>
       <value type="unknown"/>
     </values>
   </arg>
+ <specializations>
+   <specialization id="0">
+    <arg num="0"><values><value type="unknown"/></values></arg>
+    <arg num="1"><values><value type="intval"><intval isSigned="true" val="0"/></value></values></arg>
+    <arg num="2"><values><value type="unknown"/></values></arg>
+    <arg num="3"><values><value type="unknown"/></values></arg>
+    <arg num="4"><values><value type="unknown"/></values></arg>
+    <arg num="5"><values><value type="unknown"/></values></arg>
+    <arg num="6"><values><value type="unknown"/></values></arg>
+   </specialization>
+ </specializations>
 </fInfo>
 <fInfo name="start_bit" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="5">
   <arg num="0" specialize="false">
@@ -312,28 +328,18 @@
     </values>
   </arg>
 </fInfo>
-<fInfo name="wait_for_clock_high" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="false" numParams="4">
+<fInfo name="wait_half" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="1">
   <arg num="0" specialize="false">
     <values>
     </values>
   </arg>
-  <arg num="1" specialize="false">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="2" specialize="false">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="3" specialize="false">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
 </fInfo>
-<fInfo name="ensure_setup_time" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_slave.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="0">
+<fInfo name="wait_quarter" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_master_single_port.xc" specialize="false" noreturn="false" doNotSpecialize="true" numParams="1">
+  <arg num="0" specialize="false">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
 </fInfo>
 <fInfo name="_safe_memcmp" global="true" specialize="false" noreturn="false" doNotSpecialize="true" numParams="3">
   <arg num="0" specialize="false">
@@ -778,6 +784,16 @@
   <arg num="0" specialize="false">
     <values>
       <value type="unknown"/>
+    </values>
+  </arg>
+</fInfo>
+<fInfo name="read_acceleration" global="true" specialize="false" noreturn="false" doNotSpecialize="false" numParams="2">
+  <arg num="0" specialize="false">
+    <values>
+    </values>
+  </arg>
+  <arg num="1" specialize="false">
+    <values>
     </values>
   </arg>
 </fInfo>

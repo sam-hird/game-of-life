@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include "pgmIO.h"
 #include "i2c.h"
-#include <xscope.h>
-
 
 typedef unsigned char uchar;
 
@@ -35,11 +33,11 @@ interface writeInterface{
 
 on tile[0] : out port leds = XS1_PORT_4F;
 on tile[0] : in port buttons = XS1_PORT_4E;
-char  inFileName[] = "64x64.pgm";
-char outFileName[] = "64x64o.pgm";
+char  inFileName[] = "256x256.pgm";
+char outFileName[] = "testout.pgm";
 
-#define IMWD 64
-#define IMHT 64
+#define IMWD 256
+#define IMHT 256
 
 #define LED_GREEN 0x04
 #define LED_BLUE 0x02
@@ -276,8 +274,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
 
 
     timer readTimer, processTimer, writeTimer, totalTimer;
-    uint32_t timeStart, timeStop, timeRead, timeProcess, timeWrite,timeTotalStart, timeTotalStop, timeTotal;
-    totalTimer :> timeTotalStart;
+    uint32_t timeStart, timeStop, timeRead, timeProcess, timeWrite, timeTotalStart, timeTotalStop, timeTotal;
     uchar currentBoard[IMHT][IMWD];
 
 
@@ -298,9 +295,10 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     //printf("finished reading!\n");
     ledIF.update(LED_GREEN); // reader LED off
 
+    totalTimer :> timeTotalStart;
+    printf("%u",timeTotalStart);
     do{
         roundCount++;
-        //printf("processing round starting\n");
 
         //wait for orientation to be correct before continuing and change LED to show paused
         inputIF.getLastOrientation(lastOrientation);
@@ -310,7 +308,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
             ledIF.update(LED_RED);
         }
 
-
+        //for debugging, print board
         if (debug == 1){
             for(int y = 0; y < IMHT; y++){
                 for(int x = 0; x < IMWD; x++){
@@ -318,6 +316,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
                 }
                 printf("\n");
             }
+            printf("processing round starting\n");
         }
 
         //update led to show processing
@@ -381,16 +380,21 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
         inputIF.getLastButton(lastButton);
 
     } while (roundCount < 100 && lastButton != 1);
+
+    //stop timer for amount of rounds
+    totalTimer :> timeTotalStop;
+    timeTotal = timeTotalStop - timeTotalStart;
+
     //printf("SW2 pressed, saving to file!\n");
     //printf("rounds completed: %d\n", roundCount);
     ledIF.turnOffAll();
     ledIF.update(LED_BLUE);
 
-    //start write timer
-    writeTimer :> timeStart;
-
     //let the workers know to shutdown
     for(int i = 0; i<4; i++){chanWorker[i] <: (int) 0;}
+
+    //start write timer
+    writeTimer :> timeStart;
 
     //write to file
     distWrite <: (int) 1;
@@ -407,14 +411,12 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     ledIF.turnOffAll();
     ledIF.shutdown();
 
-    totalTimer :> timeTotalStop;
-    timeTotal = timeTotalStop - timeTotalStart;
 
     printf("===========Timing===========\n"
-           "    Read: %11d ticks\n"
-           " 1 round: %11d ticks\n"
-           "   Write: %11d ticks\n"
-           "   Total: %11d ticks\n",
+           "    Read: %11u ticks\n"
+           " 1 round: %11u ticks\n"
+           "   Write: %11u ticks\n"
+           "   Total: %11u ticks\n",
            timeRead,timeProcess,timeWrite, timeTotal);
     return;
 

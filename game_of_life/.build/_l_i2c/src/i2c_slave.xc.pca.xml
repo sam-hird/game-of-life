@@ -1,5 +1,4 @@
 <preCompilationAnalysis file="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_slave.xc">
-<fDef name="ensure_setup_time" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_slave.xc" noreturn="false" doNotSpecialize="true" numParams="0"/>
 <fDef name="ack_read_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="ack_write_request" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="delay_microseconds" global="true" noreturn="false" doNotSpecialize="true" numParams="1"/>
@@ -366,13 +365,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="delay_ticks" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="intval"><intval isSigned="true" val="10"/></value>
-    </values>
-  </arg>
-</fCall>
 <fCall name="__builtin_pins_eq" global="true" numArgs="2">
   <arg num="0">
     <values>
@@ -397,28 +389,17 @@
     </values>
   </arg>
 </fCall>
-<fCall name="start_read_request" global="true" interface="i2c_slave_callback_if" numArgs="0">
-</fCall>
-<fCall name="ack_read_request" global="true" interface="i2c_slave_callback_if" numArgs="0">
-</fCall>
 <fCall name="start_write_request" global="true" interface="i2c_slave_callback_if" numArgs="0">
 </fCall>
 <fCall name="ack_write_request" global="true" interface="i2c_slave_callback_if" numArgs="0">
 </fCall>
-<fCall name="ensure_setup_time" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_slave.xc" numArgs="0">
+<fCall name="start_read_request" global="true" interface="i2c_slave_callback_if" numArgs="0">
+</fCall>
+<fCall name="ack_read_request" global="true" interface="i2c_slave_callback_if" numArgs="0">
 </fCall>
 <fCall name="start_master_read" global="true" interface="i2c_slave_callback_if" numArgs="0">
 </fCall>
 <fCall name="master_requires_data" global="true" interface="i2c_slave_callback_if" numArgs="0">
-</fCall>
-<fCall name="__builtin_bitrev" global="true" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="ensure_setup_time" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_slave.xc" numArgs="0">
 </fCall>
 <fCall name="start_master_write" global="true" interface="i2c_slave_callback_if" numArgs="0">
 </fCall>
@@ -428,8 +409,6 @@
       <value type="unknown"/>
     </values>
   </arg>
-</fCall>
-<fCall name="ensure_setup_time" global="false" unit="C:/Users/samuel/XMOSworkspace/lib_i2c/src/i2c_slave.xc" numArgs="0">
 </fCall>
 <fCall name="__builtin_pins_eq" global="true" numArgs="2">
   <arg num="0">
