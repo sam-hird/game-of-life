@@ -35,11 +35,11 @@ interface writeInterface{
 
 on tile[0] : out port leds = XS1_PORT_4F;
 on tile[0] : in port buttons = XS1_PORT_4E;
-char  inFileName[] = "test.pgm";
-char outFileName[] = "testout.pgm";
+char  inFileName[] = "64x64.pgm";
+char outFileName[] = "64x64o.pgm";
 
-#define IMWD 16
-#define IMHT 16
+#define IMWD 64
+#define IMHT 64
 
 #define LED_GREEN 0x04
 #define LED_BLUE 0x02
@@ -279,6 +279,25 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     uint32_t timeStart, timeStop, timeRead, timeProcess, timeWrite,timeTotalStart, timeTotalStop, timeTotal;
     totalTimer :> timeTotalStart;
     uchar currentBoard[IMHT][IMWD];
+
+
+    //read board from file on the first round
+    ledIF.update(LED_GREEN);//reader LED on
+    readTimer :> timeStart;//start the readTimer
+    distRead <: (int) 1;// start the reader process
+    for(int y = 0; y < IMHT; y++){
+        for(int x = 0; x < IMWD; x++){
+                distRead :> currentBoard[y][x];
+        }
+    }
+
+    //stop timer and save difference in timeRead
+    readTimer :> timeStop;
+    timeRead = timeStop - timeStart;
+
+    //printf("finished reading!\n");
+    ledIF.update(LED_GREEN); // reader LED off
+
     do{
         roundCount++;
         //printf("processing round starting\n");
@@ -291,24 +310,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
             ledIF.update(LED_RED);
         }
 
-        //read board from file on the first round
-        if (roundCount==1){
-            ledIF.update(LED_GREEN);//reader LED on
-            readTimer :> timeStart;//start the readTimer
-            distRead <: (int) 1;// start the reader process
-            for(int y = 0; y < IMHT; y++){
-                for(int x = 0; x < IMWD; x++){
-                        distRead :> currentBoard[y][x];
-                }
-            }
 
-            //stop timer and save difference in timeRead
-            readTimer :> timeStop;
-            timeRead = timeStop - timeStart;
-
-            //printf("finished reading!\n");
-            ledIF.update(LED_GREEN); // reader LED off
-        }
         if (debug == 1){
             for(int y = 0; y < IMHT; y++){
                 for(int x = 0; x < IMWD; x++){
@@ -378,7 +380,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
         timeProcess = timeStop - timeStart;
         inputIF.getLastButton(lastButton);
 
-    } while (roundCount < 1000 && lastButton != 1);
+    } while (roundCount < 100 && lastButton != 1);
     //printf("SW2 pressed, saving to file!\n");
     //printf("rounds completed: %d\n", roundCount);
     ledIF.turnOffAll();
@@ -408,11 +410,11 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     totalTimer :> timeTotalStop;
     timeTotal = timeTotalStop - timeTotalStart;
 
-    printf("======Timings======\n"
-           "      Read: %11d ticks\n"
-           "   1 round: %11d ticks\n"
-           "     Write: %11d ticks\n"
-           "     Total: %11d ticks\n",
+    printf("===========Timing===========\n"
+           "    Read: %11d ticks\n"
+           " 1 round: %11d ticks\n"
+           "   Write: %11d ticks\n"
+           "   Total: %11d ticks\n",
            timeRead,timeProcess,timeWrite, timeTotal);
     return;
 

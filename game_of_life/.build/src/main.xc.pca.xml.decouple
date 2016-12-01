@@ -579,12 +579,12 @@
   </arg>
   <arg num="1">
     <values>
-      <value type="intval"><intval isSigned="true" val="16"/></value>
+      <value type="intval"><intval isSigned="true" val="64"/></value>
     </values>
   </arg>
   <arg num="2">
     <values>
-      <value type="intval"><intval isSigned="true" val="16"/></value>
+      <value type="intval"><intval isSigned="true" val="64"/></value>
     </values>
   </arg>
 </fCall>
@@ -608,7 +608,7 @@
   </arg>
   <arg num="1">
     <values>
-      <value type="intval"><intval isSigned="true" val="16"/></value>
+      <value type="intval"><intval isSigned="true" val="64"/></value>
     </values>
   </arg>
 </fCall>
@@ -622,12 +622,12 @@
   </arg>
   <arg num="1">
     <values>
-      <value type="intval"><intval isSigned="true" val="16"/></value>
+      <value type="intval"><intval isSigned="true" val="64"/></value>
     </values>
   </arg>
   <arg num="2">
     <values>
-      <value type="intval"><intval isSigned="true" val="16"/></value>
+      <value type="intval"><intval isSigned="true" val="64"/></value>
     </values>
   </arg>
 </fCall>
@@ -651,7 +651,7 @@
   </arg>
   <arg num="1">
     <values>
-      <value type="intval"><intval isSigned="true" val="16"/></value>
+      <value type="intval"><intval isSigned="true" val="64"/></value>
     </values>
   </arg>
 </fCall>
@@ -671,6 +671,20 @@
     </values>
   </arg>
 </fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="4"/></value>
+    </values>
+  </arg>
+</fCall>
+<fCall name="update" global="true" interface="ledInterface" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="intval"><intval isSigned="true" val="4"/></value>
+    </values>
+  </arg>
+</fCall>
 <fCall name="getLastOrientation" global="true" interface="inputInterface" numArgs="1">
   <arg num="0">
     <values>
@@ -696,20 +710,6 @@
   <arg num="0">
     <values>
       <value type="intval"><intval isSigned="true" val="8"/></value>
-    </values>
-  </arg>
-</fCall>
-<fCall name="update" global="true" interface="ledInterface" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="intval"><intval isSigned="true" val="4"/></value>
-    </values>
-  </arg>
-</fCall>
-<fCall name="update" global="true" interface="ledInterface" numArgs="1">
-  <arg num="0">
-    <values>
-      <value type="intval"><intval isSigned="true" val="4"/></value>
     </values>
   </arg>
 </fCall>
