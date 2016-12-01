@@ -184,24 +184,6 @@
   <core>9</core>
   <inPar/>
 </task>
-<task>
-  <name>_task_worker_10</name>
-  <inFunction>main</inFunction>
-  <parent>main</parent>
-  <calledFunction>worker</calledFunction>
-  <tile>tile[1]</tile>
-  <core>10</core>
-  <inPar/>
-</task>
-<task>
-  <name>_task_worker_11</name>
-  <inFunction>main</inFunction>
-  <parent>main</parent>
-  <calledFunction>worker</calledFunction>
-  <tile>tile[1]</tile>
-  <core>11</core>
-  <inPar/>
-</task>
 <connection>
   <ends>
     <end task="_task_ledProcess_0" type="server"/>
@@ -275,66 +257,9 @@
 </connection>
 <connection>
   <ends>
-    <end task="_task_distributor_7" type="schan"/>
-    <end task="_task_worker_10" type="schan"/>
-  </ends>
-    <index>2</index>
-  <name>distWorkers</name>
-</connection>
-<connection>
-  <ends>
-    <end task="_task_distributor_7" type="schan"/>
-    <end task="_task_worker_11" type="schan"/>
-  </ends>
-    <index>3</index>
-  <name>distWorkers</name>
-</connection>
-<connection>
-  <ends>
     <end task="_task_worker_8" type="schan"/>
     <end task="_task_worker_9" type="schan"/>
   </ends>
-    <index>0</index>
-  <name>chanWorkers</name>
-</connection>
-<connection>
-  <ends>
-    <end task="_task_worker_9" type="schan"/>
-    <end task="_task_worker_11" type="schan"/>
-  </ends>
-    <index>1</index>
-  <name>chanWorkers</name>
-</connection>
-<connection>
-  <ends>
-    <end task="_task_worker_10" type="schan"/>
-    <end task="_task_worker_11" type="schan"/>
-  </ends>
-    <index>2</index>
-  <name>chanWorkers</name>
-</connection>
-<connection>
-  <ends>
-    <end task="_task_worker_8" type="schan"/>
-    <end task="_task_worker_10" type="schan"/>
-  </ends>
-    <index>3</index>
-  <name>chanWorkers</name>
-</connection>
-<connection>
-  <ends>
-    <end task="_task_worker_8" type="schan"/>
-    <end task="_task_worker_11" type="schan"/>
-  </ends>
-    <index>4</index>
-  <name>chanWorkers</name>
-</connection>
-<connection>
-  <ends>
-    <end task="_task_worker_9" type="schan"/>
-    <end task="_task_worker_10" type="schan"/>
-  </ends>
-    <index>5</index>
   <name>chanWorkers</name>
 </connection>
 </taskgraph>

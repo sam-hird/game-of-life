@@ -33,6 +33,7 @@ interface writeInterface{
 
 on tile[0] : out port leds = XS1_PORT_4F;
 on tile[0] : in port buttons = XS1_PORT_4E;
+
 char  inFileName[] = "256x256.pgm";
 char outFileName[] = "testout.pgm";
 
@@ -189,10 +190,10 @@ void writeToFile(streaming chanend chanDist){
     return;
 }
 
-void worker(streaming chanend chanDist, streaming chanend neighborHorz, streaming chanend neighborVert, streaming chanend neighborDiag){
+void worker(streaming chanend chanDist, streaming chanend neighbor){
     int continueProcessing;
-    int CHHT = IMHT/2, CHWD = IMWD/2;
-    uchar chunk[IMHT/2+2][IMWD/2+2];
+    int CHHT = IMHT, CHWD = IMWD/2;
+    uchar chunk[IMHT+2][IMWD/2+2];
 
     while (1){
         //check if the distributor wants to stop
@@ -204,37 +205,14 @@ void worker(streaming chanend chanDist, streaming chanend neighborHorz, streamin
             for(int x = 1; x<=CHWD; x++){
                 chanDist :> chunk[y][x];
             }
+            neighbor <: chunk[y][1];
+            neighbor <: chunk[y][IMHT/2];
+            neighbor :> chunk[y][(IMHT/2)+1];
+            neighbor :> chunk[y][0];
         }
-        int ready = 1;
-        //send to neighbors
-        for (int y = 1; y<=CHHT; y++){
-            for(int x = 1; x<=CHWD; x++){
-                if(y==1){
-                    neighborVert <: chunk[y][x];
-                    neighborVert :> chunk[CHHT+1][x];
-                    if(x==1){
-                        neighborDiag <: chunk[y][x];
-                        neighborDiag :> chunk[CHHT+1][CHWD+1];
-                    } else if (x == CHWD){
-                        neighborDiag <: chunk[y][x];
-                        neighborDiag :> chunk[CHHT+1][0];
-                    }
-                } else if (y==CHHT){
-                    neighborVert <: chunk[y][x];
-                    neighborVert :> chunk[0][x];
-                    if(x==1){
-                        neighborDiag <: chunk[y][x];
-                        neighborDiag :> chunk[0][CHWD+1];
-                    } else if (x == CHWD){
-                        neighborDiag <: chunk[y][x];
-                        neighborDiag :> chunk[0][0];
-                    }
-                }
-            }
-            neighborHorz <: chunk[y][1];
-            neighborHorz :> chunk[y][CHWD+1];
-            neighborHorz <: chunk[y][CHWD];
-            neighborHorz :> chunk[y][0];
+        for (int i = 0; i<CHWD+2;i++){
+            chunk[0][i]    = chunk[CHHT][i];
+            chunk[CHHT+1][i] = chunk[1][i];
         }
 
         //calculate and send back to distributor
@@ -260,7 +238,7 @@ void worker(streaming chanend chanDist, streaming chanend neighborHorz, streamin
 
 void distributor(streaming chanend distRead, streaming chanend distWrite,
                  client interface ledInterface ledIF, client interface inputInterface inputIF,
-                 streaming chanend chanWorker[4]){
+                 streaming chanend chanWorker[2]){
 
     int lastButton = -1; //stores the last button press sent to
     int lastOrientation = -1;
@@ -284,7 +262,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     distRead <: (int) 1;// start the reader process
     for(int y = 0; y < IMHT; y++){
         for(int x = 0; x < IMWD; x++){
-                distRead :> currentBoard[y][x];
+            distRead :> currentBoard[y][x];
         }
     }
 
@@ -296,7 +274,6 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     ledIF.update(LED_GREEN); // reader LED off
 
     totalTimer :> timeTotalStart;
-    printf("%u",timeTotalStart);
     do{
         roundCount++;
 
@@ -326,51 +303,35 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
         processTimer :> timeStart;
 
         //alert workers that we are continuing
-        for(int i = 0; i<4; i++){ chanWorker[i] <: (int) 1; }
+        for(int i = 0; i<2; i++){ chanWorker[i] <: (int) 1; }
 
         //send data to relevant workers
         for(int y = 0; y < IMHT; y++){
             for(int x = 0; x < IMWD; x++){
-                if(y<IMHT/2){
-                    if(x<IMWD/2){
-                        chanWorker[0] <: currentBoard[y][x];}
-                    else{
-                        chanWorker[1] <: currentBoard[y][x];}
+                if (x<IMWD/2){
+                    chanWorker[0] <: currentBoard[y][x];
                 } else {
-                    if(x<IMWD/2){
-                        chanWorker[2] <: currentBoard[y][x];}
-                    else{
-                        chanWorker[3] <: currentBoard[y][x];}
+                    chanWorker[1] <: currentBoard[y][x];
                 }
             }
         }
 
-        int count[4] = {0,0,0,0}; //used to see how many pieces of data have been sent from each worker
+        int count[2] = {0,0}; //used to see how many pieces of data have been sent from each worker
         int inX, inY; //used for calculating each workers current xy pointer
         uchar inputValue; //holds the incoming data
 
         //retrieve data from workers and store it in currentBoard
-        while (count[0]+count[1]+count[2]+count[3] < IMHT*IMWD){
+        while (count[0]+count[1] < IMHT*IMWD){
             select{
                 case chanWorker[0] :> inputValue:
-                    inX = count[0]%(IMWD/2); inY = (count[0] - inX)/(IMHT/2);
+                    inX = count[0]%(IMWD/2); inY = (count[0] - inX)/(IMHT);
                     currentBoard[inY][inX] = inputValue;
                     count[0]++;
                     break;
                 case chanWorker[1] :> inputValue:
-                    inX = count[1]%(IMWD/2); inY = (count[1] - inX)/(IMHT/2);
+                    inX = count[1]%(IMWD/2); inY = (count[1] - inX)/(IMHT);
                     currentBoard[inY][inX+IMWD/2] = inputValue;
                     count[1]++;
-                    break;
-                case chanWorker[2] :> inputValue:
-                    inX = count[2]%(IMWD/2); inY = (count[2] - inX)/(IMHT/2);
-                    currentBoard[inY+IMHT/2][inX] = inputValue;
-                    count[2]++;
-                    break;
-                case chanWorker[3] :> inputValue:
-                    inX = count[3]%(IMWD/2); inY = (count[3] - inX)/(IMHT/2);
-                    currentBoard[inY+IMHT/2][inX+IMWD/2] = inputValue;
-                    count[3]++;
                     break;
             }
         }
@@ -391,7 +352,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     ledIF.update(LED_BLUE);
 
     //let the workers know to shutdown
-    for(int i = 0; i<4; i++){chanWorker[i] <: (int) 0;}
+    for(int i = 0; i<2; i++){chanWorker[i] <: (int) 0;}
 
     //start write timer
     writeTimer :> timeStart;
@@ -428,7 +389,7 @@ int main (void){
     interface orientationInterface orientationIF;
     interface inputInterface inputIF;
 
-    streaming chan distRead, distWrite, distWorkers[4], chanWorkers[6];
+    streaming chan distRead, distWrite, distWorkers[2], chanWorkers;
     i2c_master_if i2c[1];
 
     par {
@@ -441,10 +402,8 @@ int main (void){
         on tile[0] : writeToFile(distWrite);
         on tile[0] : distributor(distRead, distWrite, ledIF, inputIF, distWorkers);
 
-        on tile[1] : worker(distWorkers[0],chanWorkers[0],chanWorkers[3],chanWorkers[4]);
-        on tile[1] : worker(distWorkers[1],chanWorkers[0],chanWorkers[1],chanWorkers[5]);
-        on tile[1] : worker(distWorkers[2],chanWorkers[2],chanWorkers[3],chanWorkers[5]);
-        on tile[1] : worker(distWorkers[3],chanWorkers[2],chanWorkers[1],chanWorkers[4]);
+        on tile[1] : worker(distWorkers[0],chanWorkers);
+        on tile[1] : worker(distWorkers[1],chanWorkers);
 
     }
     return 0;

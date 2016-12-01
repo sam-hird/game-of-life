@@ -43,7 +43,7 @@
 <fDef name="stop_bit" global="true" interface="i2c_slave_callback_if" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="turnOffAll" global="true" interface="ledInterface" noreturn="false" doNotSpecialize="false" numParams="0"/>
 <fDef name="update" global="true" interface="ledInterface" noreturn="false" doNotSpecialize="false" numParams="1"/>
-<fDef name="worker" global="true" noreturn="false" doNotSpecialize="false" numParams="4"/>
+<fDef name="worker" global="true" noreturn="false" doNotSpecialize="false" numParams="2"/>
 <fDef name="write" global="true" interface="i2c_master_async_if" noreturn="false" doNotSpecialize="false" numParams="4"/>
 <fDef name="write" global="true" interface="i2c_master_if" noreturn="false" doNotSpecialize="false" numParams="5"/>
 <fDef name="writeToFile" global="true" noreturn="false" doNotSpecialize="false" numParams="1"/>
@@ -685,18 +685,6 @@
     </values>
   </arg>
 </fCall>
-<fCall name="printf" global="true" numArgs="2">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
 <fCall name="getLastOrientation" global="true" interface="inputInterface" numArgs="1">
   <arg num="0">
     <values>
@@ -926,89 +914,25 @@
     </values>
   </arg>
 </fCall>
-<fCall name="worker" global="true" numArgs="4" impId="8">
+<fCall name="worker" global="true" numArgs="2" impId="8">
   <arg num="0">
     <values>
       <value type="unknown"/>
     </values>
   </arg>
   <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="2">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="3">
     <values>
       <value type="unknown"/>
     </values>
   </arg>
 </fCall>
-<fCall name="worker" global="true" numArgs="4" impId="9">
+<fCall name="worker" global="true" numArgs="2" impId="9">
   <arg num="0">
     <values>
       <value type="unknown"/>
     </values>
   </arg>
   <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="2">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="3">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="worker" global="true" numArgs="4" impId="10">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="2">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="3">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-</fCall>
-<fCall name="worker" global="true" numArgs="4" impId="11">
-  <arg num="0">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="1">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="2">
-    <values>
-      <value type="unknown"/>
-    </values>
-  </arg>
-  <arg num="3">
     <values>
       <value type="unknown"/>
     </values>
