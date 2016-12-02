@@ -805,6 +805,13 @@
     </values>
   </arg>
 </fCall>
+<fCall name="printf" global="true" numArgs="1">
+  <arg num="0">
+    <values>
+      <value type="unknown"/>
+    </values>
+  </arg>
+</fCall>
 <fCall name="ledProcess" global="true" numArgs="2" impId="0">
   <arg num="0">
     <values>

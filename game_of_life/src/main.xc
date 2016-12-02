@@ -34,10 +34,12 @@ interface writeInterface{
 on tile[0] : out port leds = XS1_PORT_4F;
 on tile[0] : in port buttons = XS1_PORT_4E;
 char  inFileName[] = "256x256.pgm";
-char outFileName[] = "testout.pgm";
+char outFileName[] = "256x256o.pgm";
 
 #define IMWD 256
 #define IMHT 256
+#define ROUNDS_TO_DO 100
+#define TIMING 0
 
 #define LED_GREEN 0x04
 #define LED_BLUE 0x02
@@ -247,10 +249,8 @@ void worker(streaming chanend chanDist, streaming chanend neighborHorz, streamin
                              chunk[y+1][x-1]+chunk[y+1][x  ]+chunk[y+1][x+1])/255;
                 if (chunk[y][x] == 255){
                     returnValue = ((neighbors==2||neighbors==3)?255:0);
-                    //printf("alive: (%2.1d,%2.1d): %d, %3.1d\n",x,y,neighbors,returnValue);
                 } else {
                     returnValue = ((neighbors==3)?255:0);
-                    //printf(" dead: (%2.1d,%2.1d): %d, %3.1d\n",x,y,neighbors,returnValue);
                 }
                 chanDist <: returnValue;
             }
@@ -379,7 +379,7 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
         timeProcess = timeStop - timeStart;
         inputIF.getLastButton(lastButton);
 
-    } while (roundCount < 100 && lastButton != 1);
+    } while (roundCount < ROUNDS_TO_DO && lastButton != 1);
 
     //stop timer for amount of rounds
     totalTimer :> timeTotalStop;
@@ -411,13 +411,16 @@ void distributor(streaming chanend distRead, streaming chanend distWrite,
     ledIF.turnOffAll();
     ledIF.shutdown();
 
-
+    if(TIMING){
     printf("===========Timing===========\n"
            "    Read: %11u ticks\n"
            " 1 round: %11u ticks\n"
            "   Write: %11u ticks\n"
            "   Total: %11u ticks\n",
            timeRead,timeProcess,timeWrite, timeTotal);
+    } else {
+        printf("finished, terminating");
+    }
     return;
 
 }
